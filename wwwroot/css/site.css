@@ -1,0 +1,83 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar {
+    background-color: #87CEFA;
+    height: 100vh;
+    border-radius: 5px;
+}
+
+.sidebar a {
+    padding-top: 19px;
+    color: black;
+ }
+
+.sidebar a:hover {
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: black;
+}
+
+.bg {
+    background-color: #5FBDF4;
+}
+
+.footer {
+    text-align: center;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    width: 220px;
+    height: auto;
+    padding-top: 10px;
+}
+
+.card {
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+a {
+    text-decoration: none;
+}
+
+/* Position the dropdown menu */
+.side-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-top: 0;
+    border: none;
+    background-color: #87CEFA; /* Background color of the dropdown */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: add shadow for better visibility */
+}
+
+/* Show the dropdown menu on hover */
+.nav-item.dropdown:hover .side-dropdown-menu {
+    display: block;
+}
+

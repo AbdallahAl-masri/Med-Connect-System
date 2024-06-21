@@ -1,0 +1,88 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+
+<body>
+    <!-- Header -->
+    <nav class="navbar bg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="@Url.Action("Index", "Medical_Personnel")">
+                <img src="~/images/logo2.png" alt="Hospital Logo" class="logo" />
+            </a>
+            <h2 class="dr-name">Dashboard</h2>
+            <div class="d-flex">
+                <span class="navbar-text">Logged in as Dr. Smith</span>
+                <a href="@Url.Action("SignIn", "Account")" class="btn btn-outline-dark ms-3">Logout</a>
+            </div>
+        </div>
+    </nav>
+    <br>
+    <div class="container-fluid" style="height: 74%">
+        <!-- Main Content -->
+        <main>
+            <div class="box">
+                <h2>Dashboard</h2>
+                <p>Use the sections below to navigate to different functionalities.</p>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card text-center">
+                            <a class="card-body" href="@Url.Action("ReserveAppointment", "Medical_Personnel")">
+                                <i class="bi bi-calendar-plus display-4"></i>
+                                <h5 class="card-title">Reserve Appointment</h5>
+                                <button class="btn btn-primary">Go</button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card text-center">
+                            <a class="card-body" href="@Url.Action("ManageAppointments", "Medical_Personnel")">
+                                <i class="bi bi-calendar-check display-4"></i>
+                                <h5 class="card-title">View and Manage Appointments</h5>
+                                <button class="btn btn-primary">Go</button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card text-center">
+                            <a class="card-body" href="@Url.Action("PatientProfile", "Medical_Personnel")">
+                                <i class="bi bi-person-lines-fill display-4"></i>
+                                <h5 class="card-title">View Patient Profile</h5>
+                                <button class="btn btn-primary">Go</button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card text-center">
+                            <a class="card-body" href="@Url.Action("InsertInsuranceInfo", "Medical_Personnel")">
+                                <i class="bi bi-file-earmark-medical display-4"></i>
+                                <h5 class="card-title">Insert Insurance Information</h5>
+                                <button class="btn btn-primary">Go</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 Med-Connect. All rights reserved.</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
