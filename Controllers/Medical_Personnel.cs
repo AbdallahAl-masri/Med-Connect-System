@@ -248,9 +248,9 @@ namespace MCS.Controllers
             {
                 Id = appointment.Id,
                 PatientId = appointment.PatientId,
-                Doctor = $"Doctor {appointment.ClinicId}", // Replace with actual doctor fetching logic
-                Date = appointment.Timeslot.Date,
-                Time = appointment.Timeslot,
+                Doctor = $"Doctor {appointment.DoctorId}", // Replace with actual doctor fetching logic 
+
+                AppointmentTime = appointment.Timeslot,
                 Status = appointment.Status
             };
 
@@ -271,7 +271,7 @@ namespace MCS.Controllers
                 }
 
                 appointment.PatientId = viewModel.PatientId;
-                appointment.Timeslot = viewModel.Date.Add(viewModel.Time.TimeOfDay);
+                appointment.Timeslot = viewModel.AppointmentTime;
                 appointment.Status = viewModel.Status;
                 // Update other properties as needed
 
