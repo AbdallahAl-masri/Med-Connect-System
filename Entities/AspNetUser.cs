@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Microsoft.AspNetCore.Identity;
 namespace MCS.Entities;
 
-public partial class AspNetUser
+public partial class AspNetUser : IdentityUser<long>
 {
     public string Id { get; set; } = null!;
 

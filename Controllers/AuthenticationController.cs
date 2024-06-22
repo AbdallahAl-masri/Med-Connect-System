@@ -1,22 +1,21 @@
-﻿using MCS.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using MCS.Models;
 using Microsoft.EntityFrameworkCore;
+using MCS.Entities;
+
 namespace MCS.Controllers
 {
     public class AuthenticationController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly IConfiguration _configuration;
-    
-        public AuthenticationController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ApplicationDbContext context)
+        private readonly UserManager<DeptStaff> _userManager;
+        private readonly SignInManager<DeptStaff> _signInManager;
+        private readonly McsContext _context;
+
+        public AuthenticationController(UserManager<DeptStaff> userManager, SignInManager<DeptStaff> signInManager, McsContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -29,7 +28,7 @@ namespace MCS.Controllers
 
             if (ModelState.IsValid && model.Password == model.ConfirmPassword)
             {
-                var user = new IdentityUser { UserName = username };
+                var user = new DeptStaff { UserName = username };
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
@@ -65,14 +64,20 @@ namespace MCS.Controllers
 
             return BadRequest(ModelState);
         }
+
+        [HttpGet]
+        public IActionResult StaffLogin()
+        {
+            return View(new StaffLoginModel());
+        }
+
         [HttpPost("StaffLogin")]
-        public async Task<IActionResult> StaffLogin([FromBody] StaffLoginModel model)
+        public async Task<IActionResult> StaffLogin(StaffLoginModel model)
         {
             if (ModelState.IsValid)
             {
-                // Find the staff by StaffID and DepartmentID
-                var staff = await _context.DeptStaff
-                    .FirstOrDefaultAsync(s => s.StaffID == model.StaffID && s.DepartmentID == model.DepartmentID);
+                var staff = await _context.DeptStaffs
+                    .FirstOrDefaultAsync(s => s.StaffId == model.StaffID && s.DepartmentId == model.DepartmentID);
 
                 if (staff == null)
                 {
@@ -96,11 +101,12 @@ namespace MCS.Controllers
 
             return BadRequest(ModelState);
         }
-        [HttpPost("Logout")]
+
+        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return Ok(new { Message = "User logged out successfully" });
+            return RedirectToAction("StaffLogin", "Authentication");
         }
     }
 

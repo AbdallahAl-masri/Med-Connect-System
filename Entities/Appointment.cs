@@ -12,7 +12,6 @@ public partial class Appointment
     public long PatientId { get; set; }
     public int? DoctorId { get; set; }
 
-    //could be changed into DateTime
     public String Timeslot { get; set; }
 
     public string Status { get; set; } = null!;
@@ -20,4 +19,7 @@ public partial class Appointment
     {
         
     }
+
+
+    public virtual Department Department { get; set; } = null!;
 }

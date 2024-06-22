@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Microsoft.AspNetCore.Identity;
 namespace MCS.Entities;
 
-public partial class AspNetRoleClaim
+public partial class AspNetRoleClaim : IdentityRoleClaim<long>
 {
     public long Id { get; set; }
 

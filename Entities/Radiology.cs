@@ -21,5 +21,7 @@ public partial class Radiology
 
     public string? ImagePath { get; set; }
 
-    public string PatientName { get; set; } = null!;
+    public string? PatientName { get; set; }
+
+    public long? StaffId { get; set; }
 }

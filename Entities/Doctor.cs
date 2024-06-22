@@ -19,7 +19,9 @@ public partial class Doctor
 
     public long ClinicId { get; set; }
 
-    public long DeptartmentId { get; set; }
+    public long StaffId { get; set; }
 
     public string PasswordHash { get; set; } = null!;
+
+    public virtual ICollection<DeptStaff> DeptStaffs { get; set; } = new List<DeptStaff>();
 }

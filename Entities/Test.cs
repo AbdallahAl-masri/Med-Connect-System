@@ -23,5 +23,7 @@ public partial class Test
 
     public long PatientId { get; set; }
 
-    public string PatientName { get; set; } = null!;
+    public long? StaffId { get; set; }
+
+    public string? PatientName { get; set; }
 }

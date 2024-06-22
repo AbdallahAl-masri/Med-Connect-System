@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Microsoft.AspNetCore.Identity;
 namespace MCS.Entities;
 
-public partial class AspNetRole
+public partial class AspNetRole : IdentityUserRole<long>
 {
     public string Id { get; set; } = null!;
 

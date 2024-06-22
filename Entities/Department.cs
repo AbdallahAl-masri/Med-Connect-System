@@ -16,4 +16,6 @@ public partial class Department
     public long DeptHeadId { get; set; }
 
     public string WorkingHours { get; set; } = null!;
+
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 }

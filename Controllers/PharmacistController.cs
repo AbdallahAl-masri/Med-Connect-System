@@ -3,16 +3,19 @@ using MCS.Models;
 using System.Linq;
 using MCS.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace MCS.Controllers
 {
     public class PharmacistController : Controller
     {
         private readonly McsContext _context;
+        private readonly SignInManager<DeptStaff> _signInManager;
 
-        public PharmacistController(McsContext context)
+        public PharmacistController(McsContext context, SignInManager<DeptStaff> signInManager)
         {
             _context = context;
+            _signInManager = signInManager;
         }
 
         [HttpGet]
@@ -125,6 +128,70 @@ namespace MCS.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult PLogin()
+        {
+            return View(new StaffLoginModel());
+        }
+
+        [HttpPost("PLogin")]
+        public async Task<IActionResult> PLogin(StaffLoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var staff = await _context.DeptStaffs
+                    .FirstOrDefaultAsync(s => s.StaffId == model.StaffID && s.DepartmentId == model.DepartmentID);
+
+                if (staff == null)
+                {
+                    return BadRequest("Invalid staff ID or department.");
+                }
+
+                var result = _context.DeptStaffs.Where(p => p.PasswordHash == model.Password);
+
+                if (result != null)
+                {
+                    // Check role and redirect accordingly
+                    if (staff.Role == "Doctor")
+                    {
+                        return RedirectToAction("Index", "Doctor");
+                    }
+                    else if (staff.Role == "Pharmacist")
+                    {
+                        return RedirectToAction("Index", "Pharmacist");
+                    }
+                    else if (staff.Role == "Lab Technician")
+                    {
+                        return RedirectToAction("Index", "LabTechnician");
+                    }
+                    else if (staff.Role == "Radiology Technician")
+                    {
+                        return RedirectToAction("Index", "RadiologyTechnician");
+                    }
+                    else if (staff.Role == "Staff")
+                    {
+                        return RedirectToAction("index", "Medical_Personnel");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            }
+
+            // If we reach here, something went wrong; return the view with errors
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("PLogin", "Pharmacist");
         }
     }
 }

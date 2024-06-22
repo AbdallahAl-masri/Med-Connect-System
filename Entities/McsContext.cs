@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MCS.Entities;
 
-public partial class McsContext : DbContext
+public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, long, AspNetUserClaim, AspNetUserRole, AspNetUserLogin, AspNetRoleClaim, AspNetUserToken>
 {
     public McsContext()
     {
@@ -70,15 +72,39 @@ public partial class McsContext : DbContext
     public virtual DbSet<Radiology> Radiologies { get; set; }
 
     public virtual DbSet<Test> Tests { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=ABDALLAH;Database=MCS;Trusted_Connection=True; User Id=sa;password=abdallah123;Integrated Security=False; TrustServerCertificate=True");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Configure ApplicationRole
+        modelBuilder.Entity<ApplicationRole>(entity =>
+        {
+            base.OnModelCreating(modelBuilder);
+            entity.ToTable("ApplicationRoles"); // Unique table name for ApplicationRole
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("getutcdate()");
+        });
+        // Configure IdentityRoleClaim<long> to use a distinct table
+        modelBuilder.Entity<IdentityRoleClaim<long>>(entity =>
+        {
+            entity.ToTable("IdentityRoleClaims"); // Unique table name for IdentityRoleClaim<long>
+        });
         modelBuilder.Entity<Appointment>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DepartmentId).HasColumnName("DeaprtmentId");
+            entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.Status).HasColumnType("text");
             entity.Property(e => e.Timeslot).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Department).WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.DepartmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_appoitments_department");
         });
 
         modelBuilder.Entity<AspNetRole>(entity =>
@@ -97,8 +123,6 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<AspNetRoleClaim>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.ClaimType).HasColumnType("text");
             entity.Property(e => e.ClaimValue).HasColumnType("text");
             entity.Property(e => e.RoleId).HasColumnType("text");
@@ -106,8 +130,6 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<AspNetUser>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.ConcurrencyStamp).HasColumnType("text");
             entity.Property(e => e.Email)
                 .HasMaxLength(256)
@@ -130,8 +152,7 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<AspNetUserClaim>(entity =>
         {
-            entity.HasNoKey();
-
+            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.ClaimType).HasColumnType("text");
             entity.Property(e => e.ClaimValue).HasColumnType("text");
             entity.Property(e => e.UserId).HasColumnType("text");
@@ -139,8 +160,6 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<AspNetUserLogin>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.LoginProvider)
                 .HasMaxLength(128)
                 .IsUnicode(false);
@@ -153,16 +172,12 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<AspNetUserRole>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.RoleId).HasColumnType("text");
             entity.Property(e => e.UserId).HasColumnType("text");
         });
 
         modelBuilder.Entity<AspNetUserToken>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.LoginProvider)
                 .HasMaxLength(128)
                 .IsUnicode(false);
@@ -195,12 +210,10 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Department");
+            entity.ToTable("Department");
 
-            entity.Property(e => e.DeptHeadId).HasColumnName("DeptHeadID");
             entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.DeptHeadId).HasColumnName("DeptHeadID");
             entity.Property(e => e.Location).HasColumnType("text");
             entity.Property(e => e.Name).HasColumnType("text");
             entity.Property(e => e.WorkingHours).HasColumnType("text");
@@ -208,15 +221,20 @@ public partial class McsContext : DbContext
 
         modelBuilder.Entity<DeptStaff>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("DeptStaff");
+            entity.ToTable("DeptStaff");
 
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
-            entity.Property(e => e.Name).HasColumnType("text");
+            entity.Property(e => e.FirstName).HasColumnType("text");
+            entity.Property(e => e.LastName).HasColumnType("text");
+            entity.Property(e => e.PasswordHash).HasColumnType("text");
             entity.Property(e => e.Role).HasColumnType("text");
             entity.Property(e => e.StaffId).HasColumnName("StaffID");
+
+            entity.HasOne(d => d.Doctor).WithMany(p => p.DeptStaffs)
+                .HasForeignKey(d => d.DoctorId)
+                .HasConstraintName("FK_dept_doctor");
         });
 
         modelBuilder.Entity<Diagnosis>(entity =>
@@ -239,13 +257,13 @@ public partial class McsContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.ClinicId).HasColumnName("ClinicID");
-            entity.Property(e => e.DeptartmentId).HasColumnName("DeptartmentID");
             entity.Property(e => e.Location)
                 .HasColumnType("text")
                 .HasColumnName("location");
             entity.Property(e => e.Name).HasColumnType("text");
             entity.Property(e => e.PasswordHash).HasColumnType("text");
             entity.Property(e => e.Speciality).HasColumnType("text");
+            entity.Property(e => e.StaffId).HasColumnName("StaffID");
         });
 
         modelBuilder.Entity<DoctorAttendance>(entity =>
@@ -399,6 +417,7 @@ public partial class McsContext : DbContext
             entity.Property(e => e.ImageType).HasColumnType("text");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.PatientName).HasColumnType("text");
+            entity.Property(e => e.StaffId).HasColumnName("StaffID");
             entity.Property(e => e.TechnicianName).HasColumnType("text");
             entity.Property(e => e.TechnicianNotes).HasColumnType("text");
         });
@@ -413,6 +432,7 @@ public partial class McsContext : DbContext
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.PatientName).HasColumnType("text");
             entity.Property(e => e.Results).HasColumnType("text");
+            entity.Property(e => e.StaffId).HasColumnName("StaffID");
             entity.Property(e => e.Technician).HasColumnType("text");
             entity.Property(e => e.TestDate).HasColumnType("datetime");
             entity.Property(e => e.TestType).HasColumnType("text");

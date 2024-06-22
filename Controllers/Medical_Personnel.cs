@@ -86,7 +86,6 @@ namespace MCS.Controllers
                     PatientId = a.PatientId,
                     Doctor = $"Doctor {a.DoctorId}", // Replace with actual doctor fetching logic _context.Doctors.Find(d => d.Id == a.DoctorId).Select}",
                     AppointmentTime = a.Timeslot,
-                    Status = a.Status
                 })
                 .ToList();
 
@@ -251,7 +250,6 @@ namespace MCS.Controllers
                 Doctor = $"Doctor {appointment.DoctorId}", // Replace with actual doctor fetching logic 
 
                 AppointmentTime = appointment.Timeslot,
-                Status = appointment.Status
             };
 
             return View(viewModel);
