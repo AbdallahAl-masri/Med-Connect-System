@@ -78,7 +78,6 @@
                                         <th>Patient ID</th>
                                         <th>Doctor</th>
                                         <th>Date</th>
-                                        <th>Time</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
@@ -90,8 +89,7 @@
                                             <td>@appointment.Id</td>
                                             <td>@appointment.PatientId</td>
                                             <td>@appointment.Doctor</td>
-                                            <td>@appointment.Date.ToShortDateString()</td>
-                                            <td>@appointment.Time.ToShortTimeString()</td>
+                                            <td>@appointment.AppointmentTime</td>
                                             <td>@appointment.Status</td>
                                             <td>
                                                 <form method="get" action="@Url.Action("Edit", "Medical_Personnel", new { id = appointment.Id })" class="d-inline">
