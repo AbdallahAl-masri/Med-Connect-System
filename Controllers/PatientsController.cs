@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MCS.Data;
+using MCS.Entities;
 using MCS.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -15,24 +15,21 @@ namespace MCS.Controllers
     //[Route("api/[controller]")]
     public class PatientsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly McsContext _context;
       
-        public PatientsController(ApplicationDbContext context)
+        public PatientsController(McsContext context)
         {
             _context = context;
         }
         
-        private bool PatientExists(int id)
-        {
-          return (_context.Patient?.Any(e => e.ID == id)).GetValueOrDefault();
-        }
-        // GET: api/Patient/PatientAppointments/{patientId}
+        
+
         [HttpGet("GetPatientAppointments/{patientId}")]
-        public ActionResult<IEnumerable<PatientAppointments>> GetPatientAppointments(int patientId)
+        public ActionResult<IEnumerable<PatientAppointment>> GetPatientAppointments(int patientId)
         {
             // Retrieve appointments for the specified patient and structure them into a list
-            var appointments = _context.PatientAppointment
-                .Where(a => a.PatientID == patientId)
+            var appointments = _context.PatientAppointments
+                .Where(a => a.PatientId == patientId)
                 .ToList();
 
             if (appointments == null || appointments.Count == 0)
@@ -48,8 +45,8 @@ namespace MCS.Controllers
         public ActionResult<IEnumerable<PatientRadiology>> GetPatientRadiology(int patientId)
         {
             // Retrieve images for the specified patient and structure them into a list
-            var radiology = _context.PatientRadiology
-                .Where(r => r.PatientID == patientId)
+            var radiology = _context.PatientRadiologies
+                .Where(r => r.PatientId == patientId)
                 .ToList();
 
             if (radiology == null || radiology.Count == 0)
@@ -63,8 +60,8 @@ namespace MCS.Controllers
         public ActionResult<IEnumerable<Test>> GetPatientTests(int patientId)
         {
             // Retrieve images for the specified patient and structure them into a list
-            var tests = _context.Test
-                .Where(t => t.PatientID == patientId)
+            var tests = _context.Tests
+                .Where(t => t.PatientId == patientId)
                 .ToList();
 
             if (tests == null || tests.Count == 0)
@@ -74,6 +71,7 @@ namespace MCS.Controllers
             // will return the images as a list where we will parse them as json in the mobile app and display them
             return Ok(tests);
         }
+
         //set email
         [HttpPut("SetPatientEmail/{patientId}")]
         public async Task<IActionResult> SetPatientEmail(int patientId, [FromForm] string email)
@@ -86,7 +84,7 @@ namespace MCS.Controllers
                 return BadRequest("Invalid email format.");
             }
             // Retrieve the patient from the database
-            var patient = await _context.Patient.FirstOrDefaultAsync(p => p.ID == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
@@ -98,6 +96,7 @@ namespace MCS.Controllers
 
             return Ok("Patient email updated successfully.");
         }
+
         //set phone
         [HttpPut("SetPatientPhone/{patientId}")]
         public IActionResult SetPatientPhone(int patientId, [FromForm] long Phone)
@@ -110,7 +109,7 @@ namespace MCS.Controllers
                 return BadRequest("Invalid phone format.");
             }
             // Retrieve the patient from the database
-            var patient = _context.Patient.FirstOrDefault(p => p.ID == patientId);
+            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
@@ -126,7 +125,7 @@ namespace MCS.Controllers
         public ActionResult<Patient> GetPatientInfo(int patientId)
         {
             // Retrieve the patient from the database
-            var patient = _context.Patient.FirstOrDefault(p => p.ID == patientId);
+            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
@@ -141,7 +140,7 @@ namespace MCS.Controllers
         public  IActionResult GetInvoices(int patientId)
         {
             // Retrieve the invoices from the database
-            var invoices = _context.Invoice.Where(p => p.PatientID == patientId).ToList();
+            var invoices = _context.Invoices.Where(p => p.PatientId == patientId).ToList();
             if (invoices == null || invoices.Count == 0)
             {
                 return NotFound("no invoices found.");
@@ -154,13 +153,13 @@ namespace MCS.Controllers
         {
 
             // Retrieve the invoice from the database
-            var invoice = await _context.Invoice.FirstOrDefaultAsync(i => i.ID == IID);
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.Id == IID);
             if (invoice == null)
             {
                 return NotFound("no invoice found.");
             }
             invoice.Status = true;
-            _context.Invoice.Update(invoice);
+            _context.Invoices.Update(invoice);
             await _context.SaveChangesAsync();
             return Ok("Invoice Paid Successfully");
         }
@@ -171,22 +170,22 @@ namespace MCS.Controllers
             // Retrieve the invoice from the database
             PatientRecord record = new PatientRecord();
             //retrieve tests
-            var t = await _context.Test.Where(p => p.PatientID == patientId).ToListAsync();
+            var t = await _context.Tests.Where(p => p.PatientId == patientId).ToListAsync();
             foreach (var rec in t)
                 record.test.Append(rec);
 
             //retrieve radiology
-            var r = await _context.Radiology.Where(p => p.PatientID == patientId).ToListAsync();
+            var r = await _context.Radiologies.Where(p => p.PatientId == patientId).ToListAsync();
             foreach (var rec in r)
                 record.radiology.Append(rec);
 
             //retrieve prescriptions
-            var p = await _context.Prescription.Where(p => p.PatientID == patientId).ToListAsync();
+            var p = await _context.Prescriptions.Where(p => p.PatientId == patientId).ToListAsync();
             foreach (var rec in p)
                 record.prescription.Append(rec);
 
             //retrieve appointments
-            var a = await _context.Appointments.Where(p => p.PatientID == patientId).ToListAsync();
+            var a = await _context.Appointments.Where(p => p.PatientId == patientId).ToListAsync();
             foreach (var rec in a)
                 record.appointments.Append(rec);
             
@@ -202,27 +201,42 @@ namespace MCS.Controllers
             }
 
             // Ensure the patient exists
-            var patient = await _context.Patient.FindAsync(request.PatientID);
+            var patient = await _context.Patients.FindAsync(patientid);
             if (patient == null)
             {
                 return NotFound("Patient not found");
             }
 
             // Ensure the doctor exists
-            var doctor = await _context.Doctor.FindAsync(request.DoctorID);
-            if (doctor == null)
+            if (request.DoctorID != null)
             {
-                return NotFound("Doctor not found");
+                var doctor = await _context.Doctors.FindAsync(request.DoctorID);
+                if (doctor == null)
+                {
+                    return NotFound("Doctor not found");
+                }
             }
-
+            Appointment appointment;
             // Create the appointment
-            var appointment = new Appointment
+            if (request.DoctorID == null)
             {
-                DoctorID = request.DoctorID,
-                AppointmentDate = request.AppointmentDate,
-                Description = request.Description
-            };
+                appointment = new Appointment
+                {
+                    DepartmentId = request.DepartmentID,
+                    Timeslot = request.Appointmentperiod,
 
+                };
+            }
+            else
+            {
+                appointment = new Appointment
+                {
+                    DepartmentId = request.DepartmentID,
+                    Timeslot = request.Appointmentperiod,
+                    DoctorId = request.DoctorID,
+                };
+            }
+            
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
 

@@ -75,7 +75,7 @@ public partial class McsContext : DbContext
         modelBuilder.Entity<Appointment>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.ClinicId).HasColumnName("ClinicID");
+            entity.Property(e => e.DepartmentId).HasColumnName("DeaprtmentId");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.Status).HasColumnType("text");
             entity.Property(e => e.Timeslot).HasColumnType("datetime");

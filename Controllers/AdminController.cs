@@ -1,5 +1,4 @@
-﻿using MCS.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using System;
@@ -9,12 +8,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MCS.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using MCS.Entities;
 namespace MCS.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public AdminController(ApplicationDbContext context)
+        private readonly McsContext _context;
+        public AdminController(McsContext context)
         {
             _context = context;
         }
@@ -23,12 +23,12 @@ namespace MCS.Controllers
         {
             
             // Retrieve the department from the database
-            var dept = await _context.Department.FirstOrDefaultAsync(d => d.ID == DeptID);
+            var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == DeptID);
             if (dept == null)
             {
                 return NotFound("Department not found.");
             }
-            var doc = await _context.DeptStaff.Where(d => d.DepartmentID == DeptID).Where(d=> d.Role == "Doctor").ToListAsync();
+            var doc = await _context.DeptStaffs.Where(d => d.DepartmentId == DeptID).Where(d=> d.Role == "Doctor").ToListAsync();
             return Ok(doc);
         }
         [HttpGet("StaffInDepartment")]
@@ -36,18 +36,18 @@ namespace MCS.Controllers
         {
 
             // Retrieve the department from the database
-            var dept = await _context.Department.FirstOrDefaultAsync(d => d.ID == DeptID);
+            var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == DeptID);
             if (dept == null)
             {
                 return NotFound("Department not found.");
             }
-            var staff = _context.DeptStaff.Where(d => d.DepartmentID == DeptID).Where(d => d.Role != "Doctor").ToListAsync();
+            var staff = _context.DeptStaffs.Where(d => d.DepartmentId == DeptID).Where(d => d.Role != "Doctor").ToListAsync();
             return Ok(staff);
         }
         [HttpGet("ViewDepartments")]
         public async Task<IActionResult> ViewDepartments()
         {
-            var dept = await _context.Department.ToListAsync();
+            var dept = await _context.Departments.ToListAsync();
             return Ok(dept);
         }
         [HttpGet("ViewDepartment")]
@@ -55,7 +55,7 @@ namespace MCS.Controllers
         {
 
             // Retrieve the department from the database
-            var dept = await _context.Department.FirstOrDefaultAsync(d => d.ID == DeptID);
+            var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == DeptID);
             if (dept == null)
             {
                 return NotFound("Department not found.");
@@ -67,7 +67,7 @@ namespace MCS.Controllers
         {
 
             // Retrieve the department from the database
-            var clinic = await _context.Clinic.ToListAsync();
+            var clinic = await _context.Clinics.ToListAsync();
             return Ok(clinic);
         }
 
@@ -75,12 +75,12 @@ namespace MCS.Controllers
         public async Task<IActionResult> AddClinic([FromForm] Clinic clinicx)
         {
 
-            var clinic =  _context.Clinic.Where(c => c.ID == clinicx.ID);
+            var clinic =  _context.Clinics.Where(c => c.Id == clinicx.Id);
             if (clinic != null)
             {
                 return BadRequest("clinic already found.");
             }
-            await _context.Clinic.AddAsync(clinicx);
+            await _context.Clinics.AddAsync(clinicx);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -89,12 +89,12 @@ namespace MCS.Controllers
         public async Task<IActionResult> RemoveClinic([FromForm] int id)
         {
 
-            var clinic = await _context.Clinic.FirstOrDefaultAsync(c => c.ID == id);
+            var clinic = await _context.Clinics.FirstOrDefaultAsync(c => c.Id == id);
             if (clinic == null)
             {
                 return NotFound("Clinic not found.");
             }
-            _context.Clinic.Remove(clinic);
+            _context.Clinics.Remove(clinic);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -102,12 +102,12 @@ namespace MCS.Controllers
         public async Task<IActionResult> AddDepartment([FromForm] Department dept)
         {
 
-            var dep = _context.Department.Where(c => c.ID == dept.ID);
+            var dep = _context.Departments.Where(c => c.Id == dept.Id);
             if (dep != null)
             {
                 return BadRequest("Department already found.");
             }
-            await _context.Department.AddAsync(dept);
+            await _context.Departments.AddAsync(dept);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -115,12 +115,12 @@ namespace MCS.Controllers
         public async Task<IActionResult> RemoveDepartment([FromForm] int id)
         {
 
-            var dept = await _context.Department.FirstOrDefaultAsync(c => c.ID == id);
+            var dept = await _context.Departments.FirstOrDefaultAsync(c => c.Id == id);
             if (dept == null)
             {
                 return NotFound("Department not found.");
             }
-            _context.Department.Remove(dept);
+            _context.Departments.Remove(dept);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -128,12 +128,12 @@ namespace MCS.Controllers
         public async Task<IActionResult> AddDoctor([FromForm] Doctor doc)
         {
 
-            var docx = _context.Doctor.Where(c => c.ID == doc.ID);
+            var docx = _context.Doctors.Where(c => c.Id== doc.Id);
             if (docx != null)
             {
                 return BadRequest("Doctor already found.");
             }
-            await _context.Doctor.AddAsync(doc);
+            await _context.Doctors.AddAsync(doc);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -141,12 +141,12 @@ namespace MCS.Controllers
         public async Task<IActionResult> DeleteDoctor([FromForm] int id)
         {
 
-            var doc = await _context.Doctor.FirstOrDefaultAsync(c => c.ID == id);
+            var doc = await _context.Doctors.FirstOrDefaultAsync(c => c.Id == id);
             if (doc == null)
             {
                 return NotFound("Department not found.");
             }
-            _context.Doctor.Remove(doc);
+            _context.Doctors.Remove(doc);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -154,7 +154,7 @@ namespace MCS.Controllers
         public async Task<IActionResult> AddStaff([FromForm] DeptStaff staff)
         {
 
-            var dep = await _context.Department.FirstOrDefaultAsync(c => c.ID == staff.DepartmentID);
+            var dep = await _context.Departments.FirstOrDefaultAsync(c => c.Id == staff.DepartmentId);
 
             if (dep == null)
             {
@@ -166,7 +166,7 @@ namespace MCS.Controllers
                 return BadRequest("Missing Data");
             }
 
-            await _context.DeptStaff.AddAsync(staff);
+            await _context.DeptStaffs.AddAsync(staff);
             await _context.SaveChangesAsync();
             return Ok();
         }
@@ -174,17 +174,17 @@ namespace MCS.Controllers
         public async Task<IActionResult> RemoveStaff([FromForm] int id, [FromBody] int did)
         {
 
-            var dept = await _context.Department.FirstOrDefaultAsync(c => c.ID == did);
+            var dept = await _context.Departments.FirstOrDefaultAsync(c => c.Id == did);
             if (dept == null)
             {
                 return NotFound("Department not found.");
             }
-            var staff = await _context.DeptStaff.FirstOrDefaultAsync(s => s.StaffID == id);
+            var staff = await _context.DeptStaffs.FirstOrDefaultAsync(s => s.StaffId == id);
             if (staff == null)
             {
                 return NotFound("No Staff in Department with such ID");
             }
-            _context.DeptStaff.Remove(staff);
+            _context.DeptStaffs.Remove(staff);
             await _context.SaveChangesAsync();
             return Ok();
         }
