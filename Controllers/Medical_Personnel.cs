@@ -59,9 +59,9 @@ namespace MCS.Controllers
                 // Here, you would save the appointment to the database
                 Appointment newAppointment = new Appointment
                 {
-                    ClinicId = 1, // Assuming a single clinic for now
+                    DepartmentId = 1, // Assuming a single department for now
                     PatientId = model.PatientId,
-                    Timeslot = model.AppointmentDate.Date + model.AppointmentTime,
+                    Timeslot = model.AppointmentTime,
                     Status = "Scheduled", // Default status
                     // Other properties as needed
                 };
@@ -84,9 +84,8 @@ namespace MCS.Controllers
                 {
                     Id = a.Id,
                     PatientId = a.PatientId,
-                    Doctor = $"Doctor {a.ClinicId}", // Replace with actual doctor fetching logic
-                    Date = a.Timeslot.Date,
-                    Time = a.Timeslot,
+                    Doctor = $"Doctor {a.DoctorId}", // Replace with actual doctor fetching logic _context.Doctors.Find(d => d.Id == a.DoctorId).Select}",
+                    AppointmentTime = a.Timeslot,
                     Status = a.Status
                 })
                 .ToList();
