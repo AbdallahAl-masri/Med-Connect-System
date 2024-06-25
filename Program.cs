@@ -5,9 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
 // Configure DbContext with SQL Server
 var connectionString = builder.Configuration.GetConnectionString("McsDatabase");
 builder.Services.AddDbContext<McsContext>(options =>
@@ -18,6 +15,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
+        options.LogoutPath = "/Authentication/Logout";
     });
 
 builder.Services.AddIdentity<DeptStaff, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -50,4 +48,3 @@ app.MapControllerRoute(
     pattern: "{controller=Authentication}/{action=StaffLogin}/{id?}");
 
 app.Run();
-//agdfhath
