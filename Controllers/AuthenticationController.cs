@@ -17,9 +17,9 @@ namespace MCS.Controllers
 
         public AuthenticationController(UserManager<DeptStaff> userManager, SignInManager<DeptStaff> signInManager, McsContext context)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _context = context;
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
         [HttpPost("register")]
         public async Task<IActionResult> PatientRegister([FromBody] RegisterModel model)
@@ -84,25 +84,46 @@ namespace MCS.Controllers
                     return BadRequest("Invalid staff ID or department.");
                 }
 
-                // Verify password 
-                // Here we assume `PasswordHash` is the hashed password stored in the database
-                var passwordHasher = new PasswordHasher<DeptStaff>(); 
-                var passwordVerificationResult = passwordHasher.VerifyHashedPassword(staff, staff.PasswordHash, model.Password);
+                var result = _context.DeptStaffs.Where(p => p.PasswordHash == model.Password);
 
-                if (passwordVerificationResult == PasswordVerificationResult.Failed)
+                if (result != null)
                 {
-                    return BadRequest("Invalid password.");
+                    // Check role and redirect accordingly
+                    if (staff.Role == "Doctor")
+                    {
+                        return RedirectToAction("Index", "Doctor");
+                    }
+                    else if (staff.Role == "Pharmacist")
+                    {
+                        return RedirectToAction("Index", "Pharmacist");
+                    }
+                    else if (staff.Role == "Lab Technician")
+                    {
+                        return RedirectToAction("Index", "LabTechnician");
+                    }
+                    else if (staff.Role == "Radiology Technician")
+                    {
+                        return RedirectToAction("Index", "RadiologyTechnician");
+                    }
+                    else if (staff.Role == "Staff")
+                    {
+                        return RedirectToAction("Index", "Medical_Personnel");
+                    }
+                    else
+                {
+                        return RedirectToAction("Index", "Admin");
+                }
                 }
 
-                // If you use token-based authentication, you could generate a JWT token here
-                // For this example, we'll return a simple success message
-                return Ok(new { Message = "Login successful", Staff = staff });
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
-            return BadRequest(ModelState);
+            // If we reach here, something went wrong; return the view with errors
+            return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
