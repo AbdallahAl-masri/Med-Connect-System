@@ -15,6 +15,8 @@ namespace MCS.Controllers
 
         public IActionResult Index()
         {
+            var userName = TempData["UserName"] as string;
+            ViewBag.UserName = userName;
             return View();
         }
 

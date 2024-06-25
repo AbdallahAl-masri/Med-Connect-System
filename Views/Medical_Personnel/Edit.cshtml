@@ -1,4 +1,5 @@
 ﻿@model MCS.Models.AppointmentViewModel
+
 @{
     Layout = null;
 }
@@ -14,38 +15,38 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <div class="container">
-        <h2>Edit Appointment</h2>
-        @using (Html.BeginForm())
+    <div class="container mt-5">
+        <h2 class="mb-4">Edit Appointment</h2>
+        @using (Html.BeginForm("Edit", "Medical_Personnel", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
         {
             @Html.AntiForgeryToken()
             @Html.HiddenFor(model => model.Id)
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.PatientId)
+            <div class="mb-3">
+                @Html.LabelFor(model => model.PatientId, new { @class = "form-label" })
                 @Html.EditorFor(model => model.PatientId, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.PatientId, "", new { @class = "text-danger" })
             </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.Doctor)
-                @Html.EditorFor(model => model.Doctor, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Doctor, "", new { @class = "text-danger" })
+            <div class="mb-3">
+                @Html.LabelFor(model => model.Department, new { @class = "form-label" })
+                @Html.EditorFor(model => model.Department, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
             </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.AppointmentTime)
-                @Html.EditorFor(model => model.AppointmentTime, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
+            <div class="mb-3">
+                @Html.LabelFor(model => model.AppointmentTime, new { @class = "form-label" })
+                @Html.EditorFor(model => model.AppointmentTime, new { htmlAttributes = new { @class = "form-control", @type = "datetime-local" } })
                 @Html.ValidationMessageFor(model => model.AppointmentTime, "", new { @class = "text-danger" })
             </div>
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.Status)
+            <div class="mb-3">
+                @Html.LabelFor(model => model.Status, new { @class = "form-label" })
                 @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
             </div>
 
-            <div class="form-group">
+            <div class="mb-3">
                 <input type="submit" value="Save" class="btn btn-primary" />
                 <a href="@Url.Action("ManageAppointments", "Appointments")" class="btn btn-secondary">Cancel</a>
             </div>
@@ -56,4 +57,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

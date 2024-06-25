@@ -12,6 +12,9 @@ namespace MCS.Models
 
         [Required(AllowEmptyStrings = false, ErrorMessage = "This field is Required")]
         public string Password { get; set; }
+
+        [Required(AllowEmptyStrings = false, ErrorMessage = "This field is Required")]
+        public string UserName { get; set; }
         public StaffLoginModel() { }
 
     }

@@ -42,6 +42,8 @@ namespace MCS.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            var userName = TempData["UserName"] as string;
+            ViewBag.UserName = userName;
             return View();
         }
 
@@ -56,14 +58,15 @@ namespace MCS.Controllers
         {
             if (ModelState.IsValid)
             {
+                var dept = _context.Departments.FirstOrDefault(d => d.Name == model.Department);
                 // Here, you would save the appointment to the database
                 Appointment newAppointment = new Appointment
                 {
-                    DepartmentId = 1, // Assuming a single department for now
+                    DepartmentId = dept.Id, 
                     PatientId = model.PatientId,
                     Timeslot = model.AppointmentTime,
-                    Status = "Scheduled", // Default status
-                    // Other properties as needed
+                    Status = "Scheduled",
+                    
                 };
 
                 _context.Appointments.Add(newAppointment);
@@ -77,17 +80,19 @@ namespace MCS.Controllers
             return View(model);
         }
         [HttpGet]
-        public ActionResult ManageAppointments()
+        public async Task<ActionResult> ManageAppointments()
         {
-            List<AppointmentViewModel> appointments = _context.Appointments
-                .Select(a => new AppointmentViewModel
-                {
-                    Id = a.Id,
-                    PatientId = a.PatientId,
-                    Doctor = $"Doctor {a.DoctorId}", // Replace with actual doctor fetching logic _context.Doctors.Find(d => d.Id == a.DoctorId).Select}",
-                    AppointmentTime = a.Timeslot,
-                })
-                .ToList();
+            var appointments = await _context.Appointments
+            .Include(a => a.Department)
+            .Select(a => new AppointmentViewModel
+            {
+                Id = a.Id,
+                PatientId = a.PatientId,
+                Department = a.Department.Name,
+                AppointmentTime = a.Timeslot,
+                Doctor = a.Doctor
+            })
+            .ToListAsync();
 
             return View(appointments);
         }
@@ -235,9 +240,12 @@ namespace MCS.Controllers
         }
 
         [HttpGet]
-        public ActionResult Edit(long id)
+        public async Task<IActionResult> Edit(long id)
         {
-            var appointment = _context.Appointments.FirstOrDefault(p => p.Id == id);
+            var appointment = await _context.Appointments
+                .Include(a => a.Department)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (appointment == null)
             {
                 return NotFound();
@@ -247,9 +255,9 @@ namespace MCS.Controllers
             {
                 Id = appointment.Id,
                 PatientId = appointment.PatientId,
-                Doctor = $"Doctor {appointment.DoctorId}", // Replace with actual doctor fetching logic 
-
+                Department = appointment.Department.Name,
                 AppointmentTime = appointment.Timeslot,
+                Status = appointment.Status
             };
 
             return View(viewModel);
@@ -257,12 +265,11 @@ namespace MCS.Controllers
 
         // POST: Appointments/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(AppointmentViewModel viewModel)
+        public async Task<IActionResult> Edit(AppointmentViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                var appointment = _context.Appointments.FirstOrDefault(p => p.Id == viewModel.Id);
+                var appointment = await _context.Appointments.FirstOrDefaultAsync(p => p.Id == viewModel.Id);
                 if (appointment == null)
                 {
                     return NotFound();
@@ -274,7 +281,7 @@ namespace MCS.Controllers
                 // Update other properties as needed
 
                 _context.Appointments.Update(appointment);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 return RedirectToAction("ManageAppointments");
             }

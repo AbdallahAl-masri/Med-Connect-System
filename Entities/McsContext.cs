@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +7,7 @@ namespace MCS.Entities;
 
 public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, long, AspNetUserClaim, AspNetUserRole, AspNetUserLogin, AspNetRoleClaim, AspNetUserToken>
 {
+
     public McsContext(DbContextOptions<McsContext> options)
         : base(options)
     {
@@ -86,7 +87,6 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
         modelBuilder.Entity<Appointment>(entity =>
         {
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DepartmentId).HasColumnName("DeaprtmentId");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.Status).HasColumnType("text");
@@ -100,8 +100,6 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
 
         modelBuilder.Entity<AspNetRole>(entity =>
         {
-            entity.HasNoKey();
-
             entity.Property(e => e.ConcurrencyStamp).HasColumnType("text");
             entity.Property(e => e.Id).HasColumnType("text");
             entity.Property(e => e.Name)
@@ -151,7 +149,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
 
         modelBuilder.Entity<AspNetUserLogin>(entity =>
         {
-            entity.Property(e => e.LoginProvider)
+           entity.Property(e => e.LoginProvider)
                 .HasMaxLength(128)
                 .IsUnicode(false);
             entity.Property(e => e.ProviderDisplayName).HasColumnType("text");
@@ -169,7 +167,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
 
         modelBuilder.Entity<AspNetUserToken>(entity =>
         {
-            entity.Property(e => e.LoginProvider)
+           entity.Property(e => e.LoginProvider)
                 .HasMaxLength(128)
                 .IsUnicode(false);
             entity.Property(e => e.Name)
@@ -215,13 +213,21 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.ToTable("DeptStaff");
 
             entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.ConcurrencyStamp).HasColumnType("text");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
+            entity.Property(e => e.Email).HasMaxLength(256);
+            entity.Property(e => e.EmailConfirmed).HasColumnType("text");
             entity.Property(e => e.FirstName).HasColumnType("text");
             entity.Property(e => e.LastName).HasColumnType("text");
-            entity.Property(e => e.PasswordHash).HasColumnType("text");
+            entity.Property(e => e.NormalizedEmail).HasColumnType("text");
+            entity.Property(e => e.NormalizedUserName).HasColumnType("text");
+            entity.Property(e => e.PasswordHash).HasColumnType("varchar(max)");
+            entity.Property(e => e.PhoneNumber).HasColumnType("text");
             entity.Property(e => e.Role).HasColumnType("text");
+            entity.Property(e => e.SecurityStamp).HasColumnType("text");
             entity.Property(e => e.StaffId).HasColumnName("StaffID");
+            entity.Property(e => e.UserName).HasColumnType("varchar(max)");
 
             entity.HasOne(d => d.Doctor).WithMany(p => p.DeptStaffs)
                 .HasForeignKey(d => d.DoctorId)

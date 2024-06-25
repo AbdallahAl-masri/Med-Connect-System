@@ -77,17 +77,20 @@ namespace MCS.Controllers
             if (ModelState.IsValid)
             {
                 var staff = await _context.DeptStaffs
-                    .FirstOrDefaultAsync(s => s.StaffId == model.StaffID && s.DepartmentId == model.DepartmentID);
+                    .FirstOrDefaultAsync(s => s.StaffId == model.StaffID);
 
                 if (staff == null)
                 {
                     return BadRequest("Invalid staff ID or department.");
                 }
 
-                var result = _context.DeptStaffs.Where(p => p.PasswordHash == model.Password);
+                var passwordHasher = new PasswordHasher<StaffLoginModel>();
+                var hashedPassword = passwordHasher.HashPassword(model, model.Password);
+                var result = passwordHasher.VerifyHashedPassword(model, staff.PasswordHash, model.Password);
 
-                if (result != null)
+                if (result == PasswordVerificationResult.Success)
                 {
+                    TempData["UserName"] = staff.UserName +" "+ staff.LastName;
                     // Check role and redirect accordingly
                     if (staff.Role == "Doctor")
                     {
@@ -110,9 +113,9 @@ namespace MCS.Controllers
                         return RedirectToAction("Index", "Medical_Personnel");
                     }
                     else
-                {
+                    {
                         return RedirectToAction("Index", "Admin");
-                }
+                    }
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -123,10 +126,8 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            await _signInManager.SignOutAsync();
             return RedirectToAction("StaffLogin", "Authentication");
         }
     }

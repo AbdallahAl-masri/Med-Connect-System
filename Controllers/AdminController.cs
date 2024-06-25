@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MCS.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MCS.Entities;
+using Microsoft.AspNetCore.Identity;
 namespace MCS.Controllers
 {
     public class AdminController : Controller
@@ -189,6 +190,8 @@ namespace MCS.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            var userName = TempData["UserName"] as string;
+            ViewBag.UserName = userName;
             return View();
         }
 
@@ -205,7 +208,7 @@ namespace MCS.Controllers
             int.TryParse(searchid, out int id);
 
             var employees = await _context.DeptStaffs
-                .Where(e => e.DepartmentId == id /*|| e.StaffId == id*/)
+                .Where(e => e.DepartmentId == id || e.StaffId == id)
                 .ToListAsync();
 
             var viewModel = new ManageEmployeesViewModel
@@ -218,28 +221,63 @@ namespace MCS.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(long id)
         {
-            var employee = await _context.DeptStaffs.FindAsync(id);
+            var employee = await _context.DeptStaffs.FirstOrDefaultAsync(e => e.StaffId == id);
             if (employee == null)
             {
                 return NotFound();
             }
 
-            return View(employee);
+            var model = new DeptStaffModel
+            {
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                DepartmentId = employee.DepartmentId,
+                Role = employee.Role,
+                Email = employee.Email,
+                PhoneNumber = employee.PhoneNumber,
+                StaffId = employee.StaffId
+            };
+
+            return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(DeptStaff employee)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(DeptStaffModel employee)
         {
             if (ModelState.IsValid)
             {
-                _context.Update(employee);
+                var existingEmployee = await _context.DeptStaffs.FindAsync(employee.StaffId);
+                if (existingEmployee == null)
+                {
+                    return NotFound();
+                }
+
+                // Update fields except password
+                existingEmployee.FirstName = employee.FirstName;
+                existingEmployee.LastName = employee.LastName;
+                existingEmployee.DepartmentId = employee.DepartmentId;
+                existingEmployee.Role = employee.Role;
+                existingEmployee.Email = employee.Email;
+                existingEmployee.PhoneNumber = employee.PhoneNumber;
+
+                // Only update password if it's not empty
+                if (!string.IsNullOrEmpty(employee.PasswordHash))
+                {
+                    var passwordHasher = new PasswordHasher<DeptStaffModel>();
+                    var hashedPassword = passwordHasher.HashPassword(employee, employee.PasswordHash);
+                    existingEmployee.PasswordHash = hashedPassword;
+                }
+
+                _context.Update(existingEmployee);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(SearchEmployees));
             }
             return View(employee);
         }
+
 
         // Delete Actions
         [HttpGet]
@@ -270,12 +308,33 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCredentials(DeptStaff model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateCredentials(DeptStaffModel model)
         {
             if (ModelState.IsValid)
             {
-                // You may want to add more fields or validations here
-                _context.DeptStaffs.Add(model);
+                // Hash the password before storing it
+                var passwordHasher = new PasswordHasher<DeptStaffModel>();
+                var hashedPassword = passwordHasher.HashPassword(model, model.PasswordHash);
+                var lastStaffId = _context.DeptStaffs
+                                .OrderByDescending(s => s.StaffId)
+                                .Select(s => s.StaffId)
+                                .FirstOrDefault();
+
+                var staff = new DeptStaff
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    DepartmentId = model.DepartmentId,
+                    Role = model.Role,
+                    PasswordHash = hashedPassword, // Store hashed password
+                    Email = model.Email,
+                    PhoneNumber = model.PhoneNumber,
+                    UserName = model.FirstName,
+                    StaffId = (lastStaffId + 1),
+                };
+
+                _context.DeptStaffs.Add(staff);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }

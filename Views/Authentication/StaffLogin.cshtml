@@ -30,17 +30,22 @@
                 <h2>Staff Login</h2>
                 <form asp-action="StaffLogin" method="post">
                     <div class="form-group">
-                        <label for="DepartmentID">Department ID</label>
+                        <label asp-for="DepartmentID">Department ID</label>
                         <input type="text" id="DepartmentID" name="DepartmentID" class="form-control" placeholder="Enter department ID"  />
                         <span asp-validation-for="DepartmentID" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label for="StaffID">Staff ID</label>
+                        <label asp-for="StaffID">Staff ID</label>
                         <input type="text" id="StaffID" name="StaffID" class="form-control" placeholder="Enter staff ID"  />
                         <span asp-validation-for="StaffID" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label for="Password">Password</label>
+                        <label asp-for="UserName">User Name</label>
+                        <input type="text" id="UserName" name="UserName" class="form-control" placeholder="Enter staff ID" />
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password">Password</label>
                         <input type="password" id="Password" name="Password" class="form-control" placeholder="Enter password" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>

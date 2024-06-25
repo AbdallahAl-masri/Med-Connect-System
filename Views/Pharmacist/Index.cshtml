@@ -23,8 +23,10 @@
             </a>
             <h2 class="dr-name">Dashboard</h2>
             <div class="d-flex">
-                <span class="navbar-text">Logged in as Dr. Smith</span>
-                <a href="@Url.Action("Logout", "Pharmacist")" class="btn btn-outline-dark ms-3">Logout</a>
+                <span class="navbar-text">Logged in as @ViewBag.UserName</span>
+                <form asp-controller="Authentication" asp-action="StaffLogin" method="post" class="ms-3">
+                    <button type="submit" class="btn btn-outline-dark">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -86,7 +88,6 @@
     </div>
     <div class="footer">
         <p>&copy; 2024 Med-Connect. All rights reserved.</p>
-    </div>
     </div>
 
     <!-- Bootstrap JS -->

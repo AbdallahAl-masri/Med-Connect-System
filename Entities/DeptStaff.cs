@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+
 namespace MCS.Entities;
 
 public partial class DeptStaff : IdentityUser<long>
@@ -45,7 +46,7 @@ public partial class DeptStaff : IdentityUser<long>
 
     public int? AccessFailedCount { get; set; }
 
-    public string? Email {  get; set; }
+    public string? Email { get; set; }
 
     public virtual Doctor? Doctor { get; set; }
 }

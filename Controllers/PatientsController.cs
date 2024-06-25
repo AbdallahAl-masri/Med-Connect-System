@@ -233,7 +233,6 @@ namespace MCS.Controllers
                 {
                     DepartmentId = request.DepartmentID,
                     Timeslot = request.Appointmentperiod,
-                    DoctorId = request.DoctorID,
                 };
             }
             

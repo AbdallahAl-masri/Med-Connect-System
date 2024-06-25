@@ -18,6 +18,8 @@ namespace YourNamespace.Controllers
         [HttpGet]
         public IActionResult ViewPatient()
         {
+            var userName = TempData["UserName"] as string;
+            ViewBag.UserName = userName;
             return View();
         }
 

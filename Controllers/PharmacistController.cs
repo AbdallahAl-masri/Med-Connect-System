@@ -21,6 +21,8 @@ namespace MCS.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            var userName = TempData["UserName"] as string;
+            ViewBag.UserName = userName;
             return View();
         }
 

@@ -10,6 +10,14 @@ var connectionString = builder.Configuration.GetConnectionString("McsDatabase");
 builder.Services.AddDbContext<McsContext>(options =>
     options.UseSqlServer(connectionString));
 
+// Add Identity services
+builder.Services.AddIdentity<DeptStaff, ApplicationRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // Set to true if email confirmation is required
+})
+    .AddEntityFrameworkStores<McsContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -18,13 +26,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Authentication/Logout";
     });
 
-builder.Services.AddIdentity<DeptStaff, ApplicationRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<McsContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -46,5 +52,10 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Authentication}/{action=StaffLogin}/{id?}");
+
+app.MapControllerRoute(
+    name: "logout",
+    pattern: "Authentication/Logout",
+    defaults: new { controller = "Authentication", action = "Logout" });
 
 app.Run();
