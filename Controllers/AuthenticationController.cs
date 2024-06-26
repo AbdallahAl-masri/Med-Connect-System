@@ -123,6 +123,7 @@ namespace MCS.Controllers
         [HttpPost]
         public IActionResult Logout()
         {
+            _signInManager.SignOutAsync();
             return RedirectToAction("StaffLogin", "Authentication");
         }
     }
