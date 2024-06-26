@@ -90,7 +90,8 @@ namespace MCS.Controllers
                 PatientId = a.PatientId,
                 Department = a.Department.Name,
                 AppointmentTime = a.Timeslot,
-                Doctor = a.Doctor
+                Doctor = a.Doctor.Name,
+                Status = a.Status,
             })
             .ToListAsync();
 

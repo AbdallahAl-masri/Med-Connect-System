@@ -61,7 +61,8 @@ namespace MCS.Controllers
                     PatientName = model.PatientName,
                     TestType = model.TestName,
                     Results = model.ReportContent,
-                    TestDate = model.ReportDate
+                    TestDate = model.ReportDate,
+                    RecievedResult = true,
                 };
 
                 _context.Tests.Add(testReport);

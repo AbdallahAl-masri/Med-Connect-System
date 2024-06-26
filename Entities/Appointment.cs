@@ -15,6 +15,9 @@ public partial class Appointment
 
     public string Status { get; set; } = null!;
 
+    public long DoctorId { get; set; }
+
     public virtual Department Department { get; set; } = null!;
-    public string Doctor { get; set; }
+
+    public virtual Doctor Doctor { get; set; } = null!;
 }

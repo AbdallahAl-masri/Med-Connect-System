@@ -23,5 +23,7 @@ public partial class Doctor
 
     public string PasswordHash { get; set; } = null!;
 
+    public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+
     public virtual ICollection<DeptStaff> DeptStaffs { get; set; } = new List<DeptStaff>();
 }

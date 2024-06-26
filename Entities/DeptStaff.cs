@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
-
 namespace MCS.Entities;
 
 public partial class DeptStaff : IdentityUser<long>
@@ -18,11 +17,11 @@ public partial class DeptStaff : IdentityUser<long>
 
     public string LastName { get; set; } = null!;
 
-    public string EmailConfirmed { get; set; } = null!;
+    public string? EmailConfirmed { get; set; }
 
     public long Id { get; set; }
 
-    public string UserName { get; set; }
+    public string UserName { get; set; } = null!;
 
     public string? NormalizedUserName { get; set; }
 
