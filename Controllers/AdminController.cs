@@ -10,14 +10,17 @@ using MCS.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MCS.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 namespace MCS.Controllers
 {
     public class AdminController : Controller
     {
         private readonly McsContext _context;
-        public AdminController(McsContext context)
+        private readonly UserManager<DeptStaff> _userManager;
+        public AdminController(McsContext context, UserManager<DeptStaff> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet("DoctorsInDepartment")]
@@ -177,7 +180,7 @@ namespace MCS.Controllers
             {
                 return NotFound("Department not found.");
             }
-            var staff = await _context.DeptStaffs.FirstOrDefaultAsync(s => s.StaffId == id);
+            var staff = await _context.DeptStaffs.FirstOrDefaultAsync(s => s.Id == id);
             if (staff == null)
             {
                 return NotFound("No Staff in Department with such ID");
@@ -208,7 +211,7 @@ namespace MCS.Controllers
             int.TryParse(searchid, out int id);
 
             var employees = await _context.DeptStaffs
-                .Where(e => e.DepartmentId == id || e.StaffId == id)
+                .Where(e => e.DepartmentId == id || e.Id == id)
                 .ToListAsync();
 
             var viewModel = new ManageEmployeesViewModel
@@ -223,7 +226,7 @@ namespace MCS.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(long id)
         {
-            var employee = await _context.DeptStaffs.FirstOrDefaultAsync(e => e.StaffId == id);
+            var employee = await _context.DeptStaffs.FirstOrDefaultAsync(e => e.Id == id);
             if (employee == null)
             {
                 return NotFound();
@@ -237,7 +240,7 @@ namespace MCS.Controllers
                 Role = employee.Role,
                 Email = employee.Email,
                 PhoneNumber = employee.PhoneNumber,
-                StaffId = employee.StaffId
+                StaffId = employee.Id
             };
 
             return View(model);
@@ -264,10 +267,10 @@ namespace MCS.Controllers
                 existingEmployee.PhoneNumber = employee.PhoneNumber;
 
                 // Only update password if it's not empty
-                if (!string.IsNullOrEmpty(employee.PasswordHash))
+                if (!string.IsNullOrEmpty(employee.Password))
                 {
                     var passwordHasher = new PasswordHasher<DeptStaffModel>();
-                    var hashedPassword = passwordHasher.HashPassword(employee, employee.PasswordHash);
+                    var hashedPassword = passwordHasher.HashPassword(employee, employee.Password);
                     existingEmployee.PasswordHash = hashedPassword;
                 }
 
@@ -308,38 +311,52 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCredentials(DeptStaffModel model)
         {
             if (ModelState.IsValid)
             {
-                // Hash the password before storing it
-                var passwordHasher = new PasswordHasher<DeptStaffModel>();
-                var hashedPassword = passwordHasher.HashPassword(model, model.PasswordHash);
-                var lastStaffId = _context.DeptStaffs
-                                .OrderByDescending(s => s.StaffId)
-                                .Select(s => s.StaffId)
-                                .FirstOrDefault();
-
+                string validUserName = $"{model.FirstName}{model.LastName}".ToLower();
+                if (string.IsNullOrEmpty(validUserName))
+                {
+                    ModelState.AddModelError(string.Empty, "Username is invalid.");
+                    return RedirectToAction("AssignLoginInfo", model);
+                }
                 var staff = new DeptStaff
                 {
+                    UserName = validUserName,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     DepartmentId = model.DepartmentId,
                     Role = model.Role,
-                    PasswordHash = hashedPassword, // Store hashed password
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
-                    UserName = model.FirstName,
-                    StaffId = (lastStaffId + 1),
                 };
 
-                _context.DeptStaffs.Add(staff);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                // Use UserManager to create the user and hash the password
+                var result = await _userManager.CreateAsync(staff, model.Password);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
 
-            return View("AssignLoginInfo", model);
+            return RedirectToAction("AssignLoginInfo", model);
         }
+
+        private string GenerateValidUserName(string firstName)
+        {
+            return Regex.Replace(firstName, @"[^a-zA-Z0-9]+", "");
+        }
+
     }
 }

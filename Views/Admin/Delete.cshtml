@@ -1,4 +1,4 @@
-﻿@model MCS.Entities.DeptStaff
+﻿@model MCS.Models.DeptStaffModel
 
 @{
     ViewBag.Title = "Delete Employee";
@@ -45,7 +45,7 @@
     </dl>
 
     <form asp-action="DeleteConfirmed">
-        <input type="hidden" asp-for="StaffId" />
+        <input type="hidden" asp-for="StaffId"/>
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="SearchEmployees">Back to List</a>
     </form>

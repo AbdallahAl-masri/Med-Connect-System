@@ -131,12 +131,10 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.NormalizedUserName)
                 .HasMaxLength(256)
                 .IsUnicode(false);
-            entity.Property(e => e.PasswordHash).HasColumnType("text");
+            entity.Property(e => e.PasswordHash).HasColumnType("varchar(max)");
             entity.Property(e => e.PhoneNumber).HasColumnType("text");
             entity.Property(e => e.SecurityStamp).HasColumnType("text");
-            entity.Property(e => e.UserName)
-                .HasMaxLength(256)
-                .IsUnicode(false);
+            entity.Property(e => e.UserName).HasColumnType("varchar(max)");
         });
 
         modelBuilder.Entity<AspNetUserClaim>(entity =>
@@ -226,7 +224,6 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.PhoneNumber).HasColumnType("text");
             entity.Property(e => e.Role).HasColumnType("text");
             entity.Property(e => e.SecurityStamp).HasColumnType("text");
-            entity.Property(e => e.StaffId).HasColumnName("StaffID");
             entity.Property(e => e.UserName).HasColumnType("varchar(max)");
 
             entity.HasOne(d => d.Doctor).WithMany(p => p.DeptStaffs)

@@ -76,48 +76,43 @@ namespace MCS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var staff = await _context.DeptStaffs
-                    .FirstOrDefaultAsync(s => s.StaffId == model.StaffID);
+                var staff = await _userManager.FindByIdAsync(model.StaffID);
 
                 if (staff == null)
                 {
-                    return BadRequest("Invalid staff ID or department.");
+                    ModelState.AddModelError(string.Empty, "Invalid Staff ID.");
+                    return View(model);
                 }
 
-                var passwordHasher = new PasswordHasher<StaffLoginModel>();
-                var hashedPassword = passwordHasher.HashPassword(model, model.Password);
-                var result = passwordHasher.VerifyHashedPassword(model, staff.PasswordHash, model.Password);
-
-                if (result == PasswordVerificationResult.Success)
+                // Check if password is correct
+                if (!await _userManager.CheckPasswordAsync(staff, model.Password))
                 {
-                    TempData["UserName"] = staff.UserName +" "+ staff.LastName;
-                    // Check role and redirect accordingly
-                    if (staff.Role == "Doctor")
-                    {
-                        return RedirectToAction("Index", "Doctor");
-                    }
-                    else if (staff.Role == "Pharmacist")
-                    {
-                        return RedirectToAction("Index", "Pharmacist");
-                    }
-                    else if (staff.Role == "Lab Technician")
-                    {
-                        return RedirectToAction("Index", "LabTechnician");
-                    }
-                    else if (staff.Role == "Radiology Technician")
-                    {
-                        return RedirectToAction("Index", "RadiologyTechnician");
-                    }
-                    else if (staff.Role == "Staff")
-                    {
-                        return RedirectToAction("Index", "Medical_Personnel");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Admin");
-                    }
+                    ModelState.AddModelError(string.Empty, "Invalid Password.");
+                    return View(model);
                 }
 
+                var result = await _signInManager.PasswordSignInAsync(staff, model.Password, false, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    TempData["UserName"] = staff.UserName + " " + staff.LastName;
+                    // Check role and redirect accordingly
+                    switch (staff.Role)
+                    {
+                        case "Doctor":
+                            return RedirectToAction("Index", "Doctor");
+                        case "Pharmacist":
+                            return RedirectToAction("Index", "Pharmacist");
+                        case "Lab Technician":
+                            return RedirectToAction("Index", "LabTechnician");
+                        case "Radiology Technician":
+                            return RedirectToAction("Index", "RadiologyTechnician");
+                        case "Staff":
+                            return RedirectToAction("Index", "Medical_Personnel");
+                        default:
+                            return RedirectToAction("Index", "Admin");
+                    }
+                }
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 

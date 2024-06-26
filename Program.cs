@@ -28,6 +28,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"; // Adjust as needed
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -51,7 +56,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Authentication}/{action=StaffLogin}/{id?}");
+    pattern: "{controller=Admin}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "logout",

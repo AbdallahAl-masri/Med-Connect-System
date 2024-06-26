@@ -86,13 +86,13 @@
                                     <tr>
                                         <td>@employee.FirstName</td>
                                         <td>@employee.LastName</td>
-                                        <td>@employee.StaffId</td>
+                                        <td>@employee.Id</td>
                                         <td>@employee.DepartmentId</td>
                                         <td>@employee.Email</td>
                                         <td>@employee.Role</td>
                                         <td>
-                                            <a href="@Url.Action("Edit", "Admin", new { id = employee.StaffId })" class="btn btn-warning">Edit</a>
-                                            <a href="@Url.Action("Delete", "Admin", new { id = employee.StaffId })" class="btn btn-danger">Delete</a>
+                                            <a href="@Url.Action("Edit", "Admin", new { id = employee.Id })" class="btn btn-warning">Edit</a>
+                                            <a href="@Url.Action("Delete", "Admin", new { id = employee.Id })" class="btn btn-danger">Delete</a>
                                         </td>
                                     </tr>
                                 }

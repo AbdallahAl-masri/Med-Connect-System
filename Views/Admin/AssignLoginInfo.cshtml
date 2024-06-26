@@ -45,70 +45,70 @@
 
             <!-- Main Content -->
 
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-        <div class="box">
-            <h2>Create Login Credentials</h2>
-            @using (Html.BeginForm("CreateCredentials", "Admin", FormMethod.Post, new { id = "createCredentialsForm" }))
-            {
-                @Html.AntiForgeryToken()
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="box">
+                <h2>Create Login Credentials</h2>
+                @using (Html.BeginForm("CreateCredentials", "Admin", FormMethod.Post, new { id = "createCredentialsForm" }))
+                {
+                    @Html.AntiForgeryToken()
 
-                <div class="mb-3">
-                    @Html.LabelFor(model => model.FirstName, new { @class = "form-label" })
-                    @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", required = "required" })
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(model => model.LastName, new { @class = "form-label" })
-                    @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", required = "required" })
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(model => model.DepartmentId, new { @class = "form-label" })
-                    @Html.TextBoxFor(model => model.DepartmentId, new { @class = "form-control", required = "required" })
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(model => model.Email, new { @class = "form-label" })
-                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required", type = "email" })
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(model => model.PhoneNumber, new { @class = "form-label" })
-                    @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", required = "required" })
-                </div>
-                <div class="mb-3">
-                    @Html.LabelFor(model => model.PasswordHash, new { @class = "form-label" })
-                    @Html.PasswordFor(model => model.PasswordHash, new { @class = "form-control", required = "required" })
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Role:</label>
-                    <div>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(model => model.Role, "Doctor", new { @class = "form-check-input", id = "Doctor" })
-                            <label class="form-check-label" for="Doctor">Doctor</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(model => model.Role, "Staff", new { @class = "form-check-input", id = "Staff" })
-                            <label class="form-check-label" for="Staff">Staff</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(model => model.Role, "Pharmacist", new { @class = "form-check-input", id = "Pharmacist" })
-                            <label class="form-check-label" for="Pharmacist">Pharmacist</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(model => model.Role, "Lab Technician", new { @class = "form-check-input", id = "LabTechnician" })
-                            <label class="form-check-label" for="LabTechnician">Lab Technician</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(model => model.Role, "Radiology Technician", new { @class = "form-check-input", id = "RadiologyTechnician" })
-                            <label class="form-check-label" for="RadiologyTechnician">Radiology Technician</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            @Html.RadioButtonFor(model => model.Role, "Admin", new { @class = "form-check-input", id = "Admin" })
-                            <label class="form-check-label" for="Admin">Admin</label>
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.FirstName, new { @class = "form-label" })
+                        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.LastName, new { @class = "form-label" })
+                        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.DepartmentId, new { @class = "form-label" })
+                        @Html.TextBoxFor(model => model.DepartmentId, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.Email, new { @class = "form-label" })
+                        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required", type = "email" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.PhoneNumber, new { @class = "form-label" })
+                        @Html.TextBoxFor(model => model.PhoneNumber, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(model => model.Password, new { @class = "form-label" })
+                        @Html.PasswordFor(model => model.Password, new { @class = "form-control", required = "required" })
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role:</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Role, "Doctor", new { @class = "form-check-input", id = "Doctor" })
+                                <label class="form-check-label" for="Doctor">Doctor</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Role, "Staff", new { @class = "form-check-input", id = "Staff" })
+                                <label class="form-check-label" for="Staff">Staff</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Role, "Pharmacist", new { @class = "form-check-input", id = "Pharmacist" })
+                                <label class="form-check-label" for="Pharmacist">Pharmacist</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Role, "Lab Technician", new { @class = "form-check-input", id = "LabTechnician" })
+                                <label class="form-check-label" for="LabTechnician">Lab Technician</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Role, "Radiology Technician", new { @class = "form-check-input", id = "RadiologyTechnician" })
+                                <label class="form-check-label" for="RadiologyTechnician">Radiology Technician</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(model => model.Role, "Admin", new { @class = "form-check-input", id = "Admin" })
+                                <label class="form-check-label" for="Admin">Admin</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Create Credentials</button>
-            }
-        </div>
-    </main>
+                    <button type="submit" class="btn btn-primary">Create Credentials</button>
+                }
+            </div>
+        </main>
 
     <!-- Footer and Bootstrap JS as before -->
 </body>
