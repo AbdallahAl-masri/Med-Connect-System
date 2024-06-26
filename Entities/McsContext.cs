@@ -338,7 +338,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.ToTable("Patient");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.Address).HasColumnType("text");
+            //entity.Property(e => e.Address).HasColumnType("text");
             entity.Property(e => e.BirthDate).HasColumnType("datetime");
             entity.Property(e => e.Email).HasColumnType("text");
             entity.Property(e => e.InsuranceCompany).HasColumnType("text");
