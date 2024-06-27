@@ -10,6 +10,7 @@ using MCS.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Numerics;
 namespace MCS.Controllers
 {
     //[ApiController]
@@ -185,46 +186,36 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MakeAppointment(long patientid, [FromBody] AppointmentRequest request)
+        public async Task<IActionResult> MakeAppointment(long patientid, string departmentname, DateTime apptdate, string period,string doctorname="")
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Invalid appointment details");
-            }
+           
 
-            // Ensure the patient exists
-            var patient = await _context.Patients.FindAsync(patientid);
-            if (patient == null)
-            {
-                return BadRequest("Patient not found");
-            }
-
-            // Ensure the doctor exists
-            if (request.DoctorID != null)
-            {
-                var doctor = await _context.Doctors.FindAsync(request.DoctorID);
-                if (doctor == null)
-                {
-                    return BadRequest("Doctor not found");
-                }
-            }
+            
+            var doc = await _context.Doctors.FindAsync(doctorname);
+           
             Appointment appointment;
             // Create the appointment
-            if (request.DoctorID == null)
+            if (doctorname=="")
             {
+                var dept = await _context.Departments.FindAsync(departmentname);
                 appointment = new Appointment
                 {
-                    DepartmentId = request.DepartmentID,
-                    Timeslot = request.Appointmentperiod,
+                    DepartmentId = dept.Id,
+                    PatientId = patientid,
+                    Timeslot = apptdate.Date,
 
                 };
             }
             else
             {
+                var dept = await _context.Departments.FindAsync(departmentname);
                 appointment = new Appointment
                 {
-                    DepartmentId = request.DepartmentID,
-                    Timeslot = request.Appointmentperiod,
+                    DepartmentId = dept.Id,
+                    PatientId = patientid,
+                    Timeslot = apptdate.Date,
+                    DoctorId = doc.Id
+
                 };
             }
             
