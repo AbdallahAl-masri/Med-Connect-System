@@ -13,9 +13,9 @@ public partial class Appointment
 
     public string Timeslot { get; set; }
 
-    public string Status { get; set; } = null!;
+    public string? Status { get; set; }
 
-    public long DoctorId { get; set; }
+    public long? DoctorId { get; set; }
 
     public virtual Department Department { get; set; } = null!;
 

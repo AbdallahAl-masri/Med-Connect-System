@@ -9,6 +9,8 @@ using MCS.Entities;
 using MCS.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Numerics;
 namespace MCS.Controllers
 {
     //[ApiController]
@@ -163,76 +165,57 @@ namespace MCS.Controllers
             await _context.SaveChangesAsync();
             return Ok("Invoice Paid Successfully");
         }
-        [HttpGet("{patientId}/ViewPersonalRecord")]
+        [HttpGet("{patientId}")]
         public async Task<IActionResult> ViewPersonalRecord(int patientId)
         {
 
-            // Retrieve the invoice from the database
-            PatientRecord record = new PatientRecord();
-            //retrieve tests
-            var t = await _context.Tests.Where(p => p.PatientId == patientId).ToListAsync();
-            foreach (var rec in t)
-                record.test.Append(rec);
-
-            //retrieve radiology
-            var r = await _context.Radiologies.Where(p => p.PatientId == patientId).ToListAsync();
-            foreach (var rec in r)
-                record.radiology.Append(rec);
-
-            //retrieve prescriptions
-            var p = await _context.Prescriptions.Where(p => p.PatientId == patientId).ToListAsync();
-            foreach (var rec in p)
-                record.prescription.Append(rec);
-
-            //retrieve appointments
-            var a = await _context.Appointments.Where(p => p.PatientId == patientId).ToListAsync();
-            foreach (var rec in a)
-                record.appointments.Append(rec);
-            
+            var record = new List<PatientRecordView>();
+            var r = await _context.Diagnoses.Where(d => d.PatientId == patientId).ToListAsync();
+            foreach(var d in r)
+            {
+                var doctor = await _context.Doctors.FirstOrDefaultAsync(doc => doc.Id == d.DoctorId);
+                var t = new PatientRecordView
+                {
+                    DiagnosisDate = d.DiagnosisDate.Date,
+                    diagnosis = d.Diagnosis1,
+                    DoctorName = doctor.Name
+                };
+                record.Append(t);
+            }
             return Ok(record);
         }
 
-        [HttpPost("{patientid}/MakeAppointment")]
-        public async Task<IActionResult> MakeAppointment(long patientid, [FromBody] AppointmentRequest request)
+        [HttpPost]
+        public async Task<IActionResult> MakeAppointment(long patientid, string departmentname, DateTime apptdate, string period,string doctorname="")
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Invalid appointment details");
-            }
+           
 
-            // Ensure the patient exists
-            var patient = await _context.Patients.FindAsync(patientid);
-            if (patient == null)
-            {
-                return NotFound("Patient not found");
-            }
-
-            // Ensure the doctor exists
-            if (request.DoctorID != null)
-            {
-                var doctor = await _context.Doctors.FindAsync(request.DoctorID);
-                if (doctor == null)
-                {
-                    return NotFound("Doctor not found");
-                }
-            }
+            
+            var doc = await _context.Doctors.FindAsync(doctorname);
+           
             Appointment appointment;
             // Create the appointment
-            if (request.DoctorID == null)
+            if (doctorname=="")
             {
+                var dept = await _context.Departments.FindAsync(departmentname);
                 appointment = new Appointment
                 {
-                    DepartmentId = request.DepartmentID,
-                    Timeslot = request.Appointmentperiod,
+                    DepartmentId = dept.Id,
+                    PatientId = patientid,
+                    Timeslot = apptdate.Date,
 
                 };
             }
             else
             {
+                var dept = await _context.Departments.FindAsync(departmentname);
                 appointment = new Appointment
                 {
-                    DepartmentId = request.DepartmentID,
-                    Timeslot = request.Appointmentperiod,
+                    DepartmentId = dept.Id,
+                    PatientId = patientid,
+                    Timeslot = apptdate.Date,
+                    DoctorId = doc.Id
+
                 };
             }
             
@@ -240,6 +223,26 @@ namespace MCS.Controllers
             await _context.SaveChangesAsync();
 
             return Ok("Appointment created successfully");
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetPrescriptions(int patientId)
+        {
+
+
+            var prescriptions = await _context.Prescriptions.Where(p => p.PatientId == patientId).ToListAsync();
+            var prescs = new List<PatientPrescription>();
+
+            foreach (var prescription in prescriptions) {
+                var rec = new PatientPrescription
+                {
+                    Date = prescription.CreatedDate.Date,
+                    Meds = prescription.Medications.ToList()
+                };
+                prescs.Append(rec);
+            }
+
+            return Ok(prescs);
         }
 
 
