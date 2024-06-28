@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using MCS.Models;
 using Microsoft.EntityFrameworkCore;
 using MCS.Entities;
+using System.Security.Principal;
 
 namespace MCS.Controllers
 {
@@ -68,6 +68,8 @@ namespace MCS.Controllers
         [HttpGet]
         public IActionResult StaffLogin()
         {
+            //_signInManager.SignOutAsync();
+            ModelState.Clear();
             return View(new StaffLoginModel());
         }
 
@@ -84,14 +86,7 @@ namespace MCS.Controllers
                     return View(model);
                 }
 
-                // Check if password is correct
-                if (!await _userManager.CheckPasswordAsync(staff, model.Password))
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid Password.");
-                    return View(model);
-                }
-
-                var result = await _signInManager.PasswordSignInAsync(staff, model.Password, false, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(staff.UserName, model.Password, false, lockoutOnFailure: false);
 
                 if (result.Succeeded)
                 {
@@ -116,16 +111,16 @@ namespace MCS.Controllers
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
-            // If we reach here, something went wrong; return the view with errors
             return View(model);
         }
+
 
         [HttpPost]
         public IActionResult Logout()
         {
-            _signInManager.SignOutAsync();
             return RedirectToAction("StaffLogin", "Authentication");
         }
+
     }
 
 }

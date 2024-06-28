@@ -25,7 +25,9 @@
             <h2 class="dr-name">Dashboard</h2>
             <div class="d-flex">
                 <span class="navbar-text">Logged in as @ViewBag.UserName</span>
-                <a href="@Url.Action("SignIn", "Account")" class="btn btn-outline-dark ms-3">Logout</a>
+                <form asp-controller="Authentication" asp-action="StaffLogin" method="post" class="ms-3">
+                    <button type="submit" class="btn btn-outline-dark">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -60,15 +62,6 @@
                             <a class="card-body" href="@Url.Action("PatientProfile", "Medical_Personnel")">
                                 <i class="bi bi-person-lines-fill display-4"></i>
                                 <h5 class="card-title">View Patient Profile</h5>
-                                <button class="btn btn-primary">Go</button>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="card text-center">
-                            <a class="card-body" href="@Url.Action("InsertInsuranceInfo", "Medical_Personnel")">
-                                <i class="bi bi-file-earmark-medical display-4"></i>
-                                <h5 class="card-title">Insert Insurance Information</h5>
                                 <button class="btn btn-primary">Go</button>
                             </a>
                         </div>

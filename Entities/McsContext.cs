@@ -7,10 +7,6 @@ namespace MCS.Entities;
 
 public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, long, AspNetUserClaim, AspNetUserRole, AspNetUserLogin, AspNetRoleClaim, AspNetUserToken>
 {
-    public McsContext()
-    {
-    }
-
     public McsContext(DbContextOptions<McsContext> options)
         : base(options)
     {
@@ -93,7 +89,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.Status).HasColumnType("text");
-            entity.Property(e => e.Timeslot).HasColumnType("datetime");
+            entity.Property(e => e.Timeslot).HasColumnType("text");
 
             entity.HasOne(d => d.Department).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.DepartmentId)
@@ -147,10 +143,10 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
 
         modelBuilder.Entity<AspNetUserClaim>(entity =>
         {
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            // Id is handled by IdentityUserClaim<long>
             entity.Property(e => e.ClaimType).HasColumnType("text");
             entity.Property(e => e.ClaimValue).HasColumnType("text");
-            entity.Property(e => e.UserId).HasColumnType("text");
+            entity.Property(e => e.UserId).HasColumnType("bigint"); // Ensure this matches DeptStaff Id type
         });
 
         modelBuilder.Entity<AspNetUserLogin>(entity =>
@@ -223,21 +219,21 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.Email).HasMaxLength(256);
-            entity.Property(e => e.EmailConfirmed).HasColumnType("text");
-            entity.Property(e => e.FirstName).HasColumnType("text");
-            entity.Property(e => e.LastName).HasColumnType("text");
-            entity.Property(e => e.NormalizedEmail).HasColumnType("text");
-            entity.Property(e => e.NormalizedUserName).HasColumnType("text");
+            entity.Property(e => e.FirstName).HasMaxLength(256);
+            entity.Property(e => e.LastName).HasMaxLength(256);
+            entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
+            entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
             entity.Property(e => e.PasswordHash).IsUnicode(false);
             entity.Property(e => e.PhoneNumber).HasColumnType("text");
             entity.Property(e => e.Role).HasColumnType("text");
             entity.Property(e => e.SecurityStamp).HasColumnType("text");
-            entity.Property(e => e.UserName).IsUnicode(false);
+            entity.Property(e => e.UserName).HasMaxLength(256).IsRequired();
 
             entity.HasOne(d => d.Doctor).WithMany(p => p.DeptStaffs)
                 .HasForeignKey(d => d.DoctorId)
                 .HasConstraintName("FK_dept_doctor");
         });
+
 
         modelBuilder.Entity<Diagnosis>(entity =>
         {
@@ -393,7 +389,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.ToTable("Pharmacy");
 
             entity.Property(e => e.MedicineId).HasColumnName("MedicineID");
-            entity.Property(e => e.MedicineName).HasColumnType("text");
+            entity.Property(e => e.MedicineName).HasColumnType("varchar(50)");
             entity.Property(e => e.Shelf).HasColumnName("shelf");
             entity.Property(e => e.Stock).HasColumnName("stock");
         });

@@ -8,6 +8,6 @@ namespace MCS.Models
         public string MedicineName { get; set; }
         public long Stock { get; set; }
         public long Shelf { get; set; }
-        public List<Pharmacy> ExistingStorage { get; set; } = new List<Pharmacy>();
+        public Pharmacy ExistingStorage { get; set; } = new Pharmacy();
     }
 }

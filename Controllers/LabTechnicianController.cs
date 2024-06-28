@@ -27,9 +27,9 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult SearchPatient(string searchTerm)
+        public async Task<IActionResult> SearchPatient(string searchTerm)
         {
-            var results = _context.Tests
+            var results = await _context.Tests
                 .Where(t => t.PatientName.Contains(searchTerm) || t.PatientId.ToString() == searchTerm)
                 .Select(t => new TestResultModel
                 {
@@ -39,7 +39,7 @@ namespace MCS.Controllers
                     TestDate = t.TestDate,
                     Result = t.Results,
                     Technician = t.Technician
-                }).ToList();
+                }).ToListAsync();
 
             return View(results);
         }

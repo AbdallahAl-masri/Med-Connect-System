@@ -25,7 +25,9 @@
             <h2 class="dr-name">Update Storage</h2>
             <div class="d-flex">
                 <span class="navbar-text">Logged in as @ViewBag.UserName</span>
-                <a href="@Url.Action("SignOut", "Account")" class="btn btn-outline-dark ms-3">Logout</a>
+                <form asp-controller="Authentication" asp-action="StaffLogin" method="post" class="ms-3">
+                    <button type="submit" class="btn btn-outline-dark">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -39,8 +41,7 @@
                         <li class="nav-item"><a href="@Url.Action("Index", "Pharmacist")" class="nav-link active"><h5><i class="bi bi-house-fill"></i> Home</h5></a></li>
                         <li class="nav-item"><a href="@Url.Action("SearchPatient", "Pharmacist")" class="nav-link"><h5><i class="bi bi-search"></i> Search Patient</h5></a></li>
                         <li class="nav-item"><a href="@Url.Action("UpdateStorage", "Pharmacist")" class="nav-link"><h5><i class="bi bi-box-seam"></i> Update Storage</h5></a></li>
-                        <li class="nav-item"><a href="@Url.Action("MedicineLookup", "Pharmacist")" class="nav-link"><h5><i class="bi bi-capsule"></i> Medicine Lookup</h5></a></li>
-                        <li class="nav-item"><a href="@Url.Action("AlternativeMedicines", "Pharmacist")" class="nav-link"><h5><i class="bi bi-book"></i> Alternative Medicines</h5></a></li>
+                        <li class="nav-item"><a href="@Url.Action("MedicineLockup", "Pharmacist")" class="nav-link"><h5><i class="bi bi-capsule"></i> Medicine Lookup</h5></a></li>
                     </ul>
                 </div>
             </nav>
@@ -52,10 +53,6 @@
                     <p>Use the form below to update the medicine storage.</p>
                     <!-- Update Storage Form -->
                     <form asp-action="UpdateStorage" method="post">
-                        <div class="mb-3">
-                            <label for="medicineID" class="form-label">Medicine ID</label>
-                            <input type="text" class="form-control" id="medicineID" name="MedicineId" placeholder="Enter Medicine ID">
-                        </div>
                         <div class="mb-3">
                             <label for="medicineName" class="form-label">Medicine Name</label>
                             <input type="text" class="form-control" id="medicineName" name="MedicineName" placeholder="Enter Medicine Name">
@@ -70,42 +67,6 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Update Storage</button>
                     </form>
-                    <hr />
-                    <!-- Existing Storage Button and Table -->
-                    <div class="table-container">
-                        <h3>Existing Storage</h3>
-                        <button class="btn btn-info mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#existingStorageTable" aria-expanded="false" aria-controls="existingStorageTable">
-                            Show/Hide Existing Storage
-                        </button>
-                        <div class="collapse" id="existingStorageTable">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Medicine Name</th>
-                                        <th>Stock</th>
-                                        <th>Shelf</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.ExistingStorage)
-                                    {
-                                        <tr>
-                                            <td>@item.MedicineName</td>
-                                            <td>@item.Stock</td>
-                                            <td>@item.Shelf</td>
-                                            <td>
-                                                <form asp-action="Delete" method="post" style="display:inline;">
-                                                    <input type="hidden" name="id" value="@item.MedicineId" />
-                                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </main>
         </div>
@@ -116,6 +77,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
 </body>
 
 </html>

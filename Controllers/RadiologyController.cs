@@ -1,6 +1,7 @@
 ﻿using MCS.Entities;
 using MCS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MCS.Controllers
 {
@@ -26,9 +27,9 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult SearchPatient(string searchTerm)
+        public async Task<IActionResult> SearchPatient(string searchTerm)
         {
-            var results = _context.Radiologies
+            var results = await _context.Radiologies
                 .Where(t => t.PatientName.Contains(searchTerm) || t.PatientId.ToString() == searchTerm)
                 .Select(t => new TestResultModel
                 {
@@ -37,7 +38,7 @@ namespace MCS.Controllers
                     TestType = t.ImageType,
                     TestDate = t.ImageDate,
                     Result = t.ImagePath,
-                }).ToList();
+                }).ToListAsync();
 
             return View(results);
         }

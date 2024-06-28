@@ -1,4 +1,5 @@
 using MCS.Entities;
+using MCS.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,25 +14,48 @@ builder.Services.AddDbContext<McsContext>(options =>
 // Add Identity services
 builder.Services.AddIdentity<DeptStaff, ApplicationRole>(options =>
 {
+    // Configure sign-in requirements
     options.SignIn.RequireConfirmedAccount = false; // Set to true if email confirmation is required
+
+    // Configure user name characters allowed
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
+    // Configure password policies
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
 })
     .AddEntityFrameworkStores<McsContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddClaimsPrincipalFactory<CustomUserClaimsPrincipalFactory>();
 
+// Configure authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.LogoutPath = "/Authentication/Logout";
+        options.LoginPath = "/Account/Login"; // Specify login path
+        options.AccessDeniedPath = "/Account/Denied"; // Specify access denied path
     });
 
+// Add controllers and views support
 builder.Services.AddControllersWithViews();
 
+// Configure global identity options (optional)
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"; // Adjust as needed
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequiredUniqueChars = 1;
 });
+
+builder.Services.AddScoped<IUserClaimsPrincipalFactory<DeptStaff>, CustomUserClaimsPrincipalFactory>();
 
 var app = builder.Build();
 
@@ -51,16 +75,14 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Enable authentication and authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Map default controller route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Authentication}/{action=StaffLogin}/{id?}");
 
-app.MapControllerRoute(
-    name: "logout",
-    pattern: "Authentication/Logout",
-    defaults: new { controller = "Authentication", action = "Logout" });
 
 app.Run();
