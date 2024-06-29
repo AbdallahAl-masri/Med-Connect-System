@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MCS.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using MCS.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
+
 namespace MCS.Controllers
 {
     public class AdminController : Controller
@@ -311,18 +305,26 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCredentials(DeptStaffModel model)
         {
             if (ModelState.IsValid)
             {
-                string validUserName = $"{model.FirstName}{model.LastName}".ToLower();
-                if (string.IsNullOrEmpty(validUserName))
+                var validUserName = GenerateValidUserName(model.FirstName);
+                var existingUser = await _userManager.FindByNameAsync(validUserName);
+
+                if (existingUser != null)
                 {
-                    ModelState.AddModelError(string.Empty, "Username is invalid.");
-                    return RedirectToAction("AssignLoginInfo", model);
+                    ModelState.AddModelError(string.Empty, "Username already exists. Please choose a different username.");
+                    return View("AssignLoginInfo", model);
                 }
+
+                if (model.Password == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Please insert password");
+                    return View("AssignLoginInfo", model);
+                }
+
                 var staff = new DeptStaff
                 {
                     UserName = validUserName,
@@ -334,7 +336,6 @@ namespace MCS.Controllers
                     PhoneNumber = model.PhoneNumber,
                 };
 
-                // Use UserManager to create the user and hash the password
                 var result = await _userManager.CreateAsync(staff, model.Password);
 
                 if (result.Succeeded)
@@ -350,13 +351,22 @@ namespace MCS.Controllers
                 }
             }
 
-            return RedirectToAction("AssignLoginInfo", model);
+            return View("AssignLoginInfo",model);
         }
 
         private string GenerateValidUserName(string firstName)
         {
-            return Regex.Replace(firstName, @"[^a-zA-Z0-9]+", "");
+            // Remove invalid characters and ensure the username is not empty
+            var validUserName = Regex.Replace(firstName, @"[^a-zA-Z0-9\-_\.@]+", "");
+            if (string.IsNullOrWhiteSpace(validUserName))
+            {
+                validUserName = Guid.NewGuid().ToString();
+            }
+            return validUserName;
         }
+
+
+
 
     }
 }

@@ -26,8 +26,7 @@ namespace MCS.Controllers
         
         
 
-        [HttpGet]
-        [Route("GetPatientAppointments")]
+        [HttpGet("GetPatientAppointments/{patientId}")]
         public ActionResult<IEnumerable<PatientAppointment>> GetPatientAppointments(int patientId)
         {
             // Retrieve appointments for the specified patient and structure them into a list
@@ -44,8 +43,7 @@ namespace MCS.Controllers
         }
 
         // GET: api/Patient/PatientRadiology/{patientId}
-        [HttpGet]
-        [Route("GetPatientRadiology")]
+        [HttpGet("PatientRadiology/{patientId}")]
         public ActionResult<IEnumerable<PatientRadiology>> GetPatientRadiology(int patientId)
         {
             // Retrieve images for the specified patient and structure them into a list
@@ -60,8 +58,7 @@ namespace MCS.Controllers
             // will return the images as a list where we will parse them as json in the mobile app and display them
             return Ok(radiology);
         }
-        [HttpGet]
-        [Route("GetpatientTests")]
+        [HttpGet("GetpatientTests/{patientId}")]
         public ActionResult<IEnumerable<Test>> GetPatientTests(int patientId)
         {
             // Retrieve images for the specified patient and structure them into a list
@@ -78,9 +75,7 @@ namespace MCS.Controllers
         }
 
         //set email
-        [HttpPut]
-        [Route("SetPatientEmail")]
-
+        [HttpPut("SetPatientEmail/{patientId}")]
         public async Task<IActionResult> SetPatientEmail(int patientId, [FromForm] string email)
         {
             string emailPattern = @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$";
@@ -105,9 +100,7 @@ namespace MCS.Controllers
         }
 
         //set phone
-        [HttpPut]
-        [Route("SetPatientPhone")]
-
+        [HttpPut("SetPatientPhone/{patientId}")]
         public IActionResult SetPatientPhone(int patientId, [FromForm] long Phone)
         {
             string PhonePattern = @"^07[7,8,9](\d){7}$";
@@ -130,9 +123,7 @@ namespace MCS.Controllers
 
             return Ok("Patient phone updated successfully.");
         }
-        [HttpGet]
-        [Route("GetPatientInfo")]
-
+        [HttpGet("{patientId}/GetPatientInfo")]
         public ActionResult<Patient> GetPatientInfo(int patientId)
         {
             // Retrieve the patient from the database
@@ -147,10 +138,8 @@ namespace MCS.Controllers
 
 
 
-        [HttpGet]
-        [Route("GetInvoices")]
-
-        public IActionResult GetInvoices(int patientId)
+        [HttpGet("{patientId}/GetInvoices")]
+        public  IActionResult GetInvoices(int patientId)
         {
             // Retrieve the invoices from the database
             var invoices = _context.Invoices.Where(p => p.PatientId == patientId).ToList();
@@ -161,9 +150,7 @@ namespace MCS.Controllers
 
             return Ok(invoices);
         }
-        [HttpPost]
-        [Route("PayInvoice")]
-
+        [HttpPost("{patientId}/PayInvoice")]
         public async Task<IActionResult> PayInvoice(int patientId, [FromForm] int IID)
         {
 
@@ -178,9 +165,7 @@ namespace MCS.Controllers
             await _context.SaveChangesAsync();
             return Ok("Invoice Paid Successfully");
         }
-        [HttpGet]
-        [Route("ViewPersonalRecord")]
-
+        [HttpGet("{patientId}")]
         public async Task<IActionResult> ViewPersonalRecord(int patientId)
         {
 
@@ -201,7 +186,6 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        [Route("MakeAppointment")]
         public async Task<IActionResult> MakeAppointment(long patientid, string departmentname, DateTime apptdate, string period,string doctorname="")
         {
            
@@ -218,8 +202,8 @@ namespace MCS.Controllers
                 {
                     DepartmentId = dept.Id,
                     PatientId = patientid,
-                    Timeslot = apptdate.Date,
-                    Period = period
+                    DateTime = apptdate.Date,
+
                 };
             }
             else
@@ -229,9 +213,9 @@ namespace MCS.Controllers
                 {
                     DepartmentId = dept.Id,
                     PatientId = patientid,
-                    Timeslot = apptdate.Date,
-                    DoctorId = doc.Id,
-                    Period = period
+                    DateTime = apptdate.Date,
+                    DoctorId = doc.Id
+
                 };
             }
             
@@ -242,8 +226,6 @@ namespace MCS.Controllers
         }
         
         [HttpGet]
-        [Route("GetPrescriptions")]
-
         public async Task<IActionResult> GetPrescriptions(int patientId)
         {
 

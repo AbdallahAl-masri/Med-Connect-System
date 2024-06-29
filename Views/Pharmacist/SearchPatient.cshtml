@@ -22,7 +22,9 @@
             <h2 class="dr-name">Patient</h2>
             <div class="d-flex">
                 <span class="navbar-text">Logged in as @ViewBag.UserName</span>
-                <a href="@Url.Action("SignOut", "Account")" class="btn btn-outline-dark ms-3">Logout</a>
+                <form asp-controller="Authentication" asp-action="StaffLogin" method="post" class="ms-3">
+                    <button type="submit" class="btn btn-outline-dark">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -33,10 +35,9 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item"><a href="@Url.Action("Index", "Pharmacist")" class="nav-link active"><h5><i class="bi bi-house-fill"></i> Home</h5></a></li>
-                        <li class="nav-item"><a href="@Url.Action("Index", "Pharmacist")" class="nav-link"><h5><i class="bi bi-search"></i> Search Patient</h5></a></li>
+                        <li class="nav-item"><a href="@Url.Action("SearchPatient", "Pharmacist")" class="nav-link"><h5><i class="bi bi-search"></i> Search Patient</h5></a></li>
                         <li class="nav-item"><a href="@Url.Action("UpdateStorage", "Pharmacist")" class="nav-link"><h5><i class="bi bi-box-seam"></i> Update Storage</h5></a></li>
-                        <li class="nav-item"><a href="@Url.Action("MedicineLookup", "Pharmacist")" class="nav-link"><h5><i class="bi bi-capsule"></i> Medicine Lookup</h5></a></li>
-                        <li class="nav-item"><a href="@Url.Action("AlternativeMedicines", "Pharmacist")" class="nav-link"><h5><i class="bi bi-book"></i> Alternative Medicines</h5></a></li>
+                        <li class="nav-item"><a href="@Url.Action("MedicineLookup", "Pharmacist")" class="nav-link"><h5><i class="bi bi-capsule"></i> Medicine Lookup</h5></a></li><li class="nav-item"><a href="@Url.Action("AlternativeMedicines", "Pharmacist")" class="nav-link"><h5><i class="bi bi-book"></i> Alternative Medicines</h5></a></li>
                     </ul>
                 </div>
             </nav>

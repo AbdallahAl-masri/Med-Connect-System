@@ -33,23 +33,23 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult SearchPatient(long patientId)
+        public async Task<IActionResult> SearchPatient(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var prescriptions = _context.Prescriptions
+            var prescriptions = await _context.Prescriptions
             .Where(p => p.PatientId == patientId)
             .Include(p => p.Medications)
-            .ToList();
+            .ToListAsync();
 
             var model = new PrescriptionModel
             {
@@ -64,22 +64,18 @@ namespace MCS.Controllers
         [HttpGet]
         public IActionResult UpdateStorage()
         {
-            var model = new UpdateStorageViewModel
-            {
-                ExistingStorage = _context.Pharmacies.ToList()
-            };
+            var model = new UpdateStorageViewModel();
 
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult UpdateStorage(UpdateStorageViewModel model)
+        public async Task<IActionResult> UpdateStorage(UpdateStorageViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var pharmacy = new Pharmacy
                 {
-                    MedicineId = model.MedicineId,
                     MedicineName = model.MedicineName,
                     Stock = model.Stock,
                     Shelf = model.Shelf
@@ -88,17 +84,15 @@ namespace MCS.Controllers
                 _context.Pharmacies.Add(pharmacy);
                 _context.SaveChanges();
 
-                // Refresh the list
-                model.ExistingStorage = _context.Pharmacies.ToList();
             }
 
             return View(model);
         }
 
         [HttpPost]
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> Delete(long id)
         {
-            var pharmacy = _context.Pharmacies.Find(id);
+            var pharmacy = await _context.Pharmacies.FindAsync(id);
             if (pharmacy != null)
             {
                 _context.Pharmacies.Remove(pharmacy);
@@ -107,7 +101,7 @@ namespace MCS.Controllers
 
             return RedirectToAction(nameof(UpdateStorage));
         }
-
+        [HttpGet]
         public IActionResult MedicineLockup()
         {
             var model = new MedicineLookupViewModel();
@@ -115,21 +109,35 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult MedicineLockup(MedicineLookupViewModel model)
+        public async Task<IActionResult> MedicineLockup(MedicineLookupViewModel model)
         {
             if (!string.IsNullOrEmpty(model.MedicineName))
             {
-                model.SearchResults = _context.Pharmacies
+                model.SearchResults = await _context.Pharmacies
                     .Where(m => m.MedicineName.Contains(model.MedicineName))
                     .Select(m => new MedicineViewModel
                     {
                         MedicineName = m.MedicineName,
                         Stock = m.Stock,
                         Shelf = m.Shelf.ToString()
-                    }).ToList();
+                    }).ToListAsync();
             }
 
             return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(string medicineName, long stock, long shelf)
+        {
+            var medicine = _context.Pharmacies.FirstOrDefault(m => m.MedicineName == medicineName);
+            if (medicine != null)
+            {
+                medicine.Stock = stock;
+                medicine.Shelf = shelf;
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("MedicineLockup");
         }
 
     }

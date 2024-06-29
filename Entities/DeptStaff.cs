@@ -1,49 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
-namespace MCS.Entities;
 
-public partial class DeptStaff : IdentityUser<long>
+namespace MCS.Entities
 {
-    public string FirstName { get; set; } = null!;
+    public partial class DeptStaff : IdentityUser<long>
+    {
+        public string FirstName { get; set; } = null!;
+        public long DepartmentId { get; set; }
+        public string Role { get; set; } = null!;
+        public long? DoctorId { get; set; }
+        public string LastName { get; set; } = null!;
+        public  string? EmailConfirmed { get; set; }
+        public long Id { get; set; }
+        public override string UserName { get; set; } = null!;
+        public override string? NormalizedUserName { get; set; }
+        public override string? NormalizedEmail { get; set; }
+        public override string? SecurityStamp { get; set; }
+        public override string? ConcurrencyStamp { get; set; }
+        public override string? PhoneNumber { get; set; }
+        public  bool? PhoneNumberConfirmed { get; set; }
+        public  bool? TwoFactorEnabled { get; set; }
+        public override DateTimeOffset? LockoutEnd { get; set; }
+        public  bool? LockoutEnabled { get; set; }
+        public override int AccessFailedCount { get; set; }
+        public override string? Email { get; set; }
 
-    public long DepartmentId { get; set; }
-
-    public string Role { get; set; } = null!;
-
-    public long? DoctorId { get; set; }
-
-    public string PasswordHash { get; set; } = null!;
-
-    public string LastName { get; set; } = null!;
-
-    public string? EmailConfirmed { get; set; }
-
-    public long Id { get; set; }
-
-    public string UserName { get; set; } = null!;
-
-    public string? NormalizedUserName { get; set; }
-
-    public string? NormalizedEmail { get; set; }
-
-    public string? SecurityStamp { get; set; }
-
-    public string? ConcurrencyStamp { get; set; }
-
-    public string? PhoneNumber { get; set; }
-
-    public bool? PhoneNumberConfirmed { get; set; }
-
-    public bool? TwoFactorEnabled { get; set; }
-
-    public DateTimeOffset? LockoutEnd { get; set; }
-
-    public bool? LockoutEnabled { get; set; }
-
-    public int? AccessFailedCount { get; set; }
-
-    public string? Email { get; set; }
-
-    public virtual Doctor? Doctor { get; set; }
+        public virtual Doctor? Doctor { get; set; }
+    }
 }

@@ -13,6 +13,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        #doctorSelectorContainer {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -25,7 +30,9 @@
             <h2 class="dr-name">Reserve Appointment</h2>
             <div class="d-flex">
                 <span class="navbar-text">Logged in as @ViewBag.UserName</span>
-                <a href="Sign In.html" class="btn btn-outline-dark ms-3">Logout</a>
+                <form asp-controller="Authentication" asp-action="StaffLogin" method="post" class="ms-3">
+                    <button type="submit" class="btn btn-outline-dark">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -79,25 +86,27 @@
                             </div>
                             <div class="mb-3">
                                 <label for="departmentSelection" class="form-label">Select Department</label>
-                                <select class="form-select" id="departmentSelection" name="departmentId" required>
+                                <select class="form-select" id="departmentSelection" name="departmentId" required onchange="loadDoctors()">
                                     <option value="" disabled selected>Select department</option>
-                                    <option value="1">Department 1</option>
-                                    <option value="2">Department 2</option>
-                                    <!-- Add more departments as needed -->
+                                    @foreach (var department in Model.Departments)
+                                    {
+                                        <option value="@department.Id">@department.Name</option>
+                                    }
                                 </select>
                             </div>
-                            <div class="mb-3">
+                            <div id="doctorSelectorContainer" class="mb-3">
                                 <label for="doctorSelection" class="form-label">Select Doctor</label>
                                 <select class="form-select" id="doctorSelection" name="doctorId" required>
                                     <option value="" disabled selected>Select doctor</option>
-                                    <option value="1">Doctor 1</option>
-                                    <option value="2">Doctor 2</option>
-                                    <!-- Add more doctors as needed -->
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="appointmentTime" class="form-label">Time</label>
-                                <input type="time" class="form-control" id="appointmentTime" name="appointmentTime" required>
+                                <select type="time" class="form-control" id="appointmentTime" name="appointmentTime" required>
+                                    <option value="" disabled selected>Select Time</option>
+                                    <option value="morning">morning</option>
+                                    <option value="afternoon">afternoon</option>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary">Reserve Appointment</button>
                         </form>
@@ -112,6 +121,37 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function loadDoctors() {
+            var departmentId = document.getElementById('departmentSelection').value;
+            var doctorSelection = document.getElementById('doctorSelection');
+            var doctorSelectorContainer = document.getElementById('doctorSelectorContainer');
+
+            // Clear current options
+            doctorSelection.innerHTML = '<option value="" disabled selected>Select doctor</option>';
+
+            if (departmentId) {
+                // Fetch doctors based on departmentId
+                fetch(`/Medical_Personnel/GetDoctorsByDepartment?departmentId=${departmentId}`)
+                    .then(response => response.json())
+                    .then(doctors => {
+                        doctors.forEach(doctor => {
+                            var option = document.createElement('option');
+                            option.value = doctor.id;
+                            option.textContent = doctor.name;
+                            doctorSelection.appendChild(option);
+                        });
+                        // Show the doctors selector
+                        doctorSelectorContainer.style.display = 'block';
+                    })
+                    .catch(error => console.error('Error fetching doctors:', error));
+            } else {
+                // Hide the doctors selector if no department is selected
+                doctorSelectorContainer.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 
 </html>

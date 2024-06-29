@@ -47,18 +47,22 @@ namespace MCS.Controllers
             return View();
         }
 
-        public IActionResult ReserveAppointment()
+        public async Task<IActionResult> ReserveAppointment()
         {
-            return View();
+            var model = new ReserveAppointmentViewModel
+            {
+                Departments = await _context.Departments.ToListAsync()
+            };
+            return View(model);
         }
 
         // POST: ReserveAppointment
         [HttpPost]
-        public IActionResult ReserveAppointment(ReserveAppointmentViewModel model)
+        public async Task<IActionResult> ReserveAppointment(ReserveAppointmentViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dept = _context.Departments.FirstOrDefault(d => d.Name == model.Department);
+                var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == model.Department);
                 // Here, you would save the appointment to the database
                 Appointment newAppointment = new Appointment
                 {
@@ -102,13 +106,9 @@ namespace MCS.Controllers
         [HttpPost]
         public ActionResult ManageAppointments(List<AppointmentViewModel> appointments)
         {
-            // This method is set up to handle POST requests but doesn't need to re-fetch the data
-            // Since this example does not handle form submission, the logic is kept simple.
             return RedirectToAction("ManageAppointments");
         }
-        //here
-
-
+        
         [HttpGet]
         public IActionResult Diagnosis()
         {
@@ -116,20 +116,20 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult Diagnosis(long patientId)
+        public async Task<IActionResult> Diagnosis(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var diagnoses = _context.Diagnoses.Where(d => d.PatientId == patientId).ToList();
+            var diagnoses = await _context.Diagnoses.Where(d => d.PatientId == patientId).ToListAsync();
 
             var model = new DiagnosisModel
             {
@@ -148,20 +148,20 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult LabTests(long patientId)
+        public async Task<IActionResult> LabTests(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var labTests = _context.Tests.Where(t => t.PatientId == patientId).ToList();
+            var labTests = await _context.Tests.Where(t => t.PatientId == patientId).ToListAsync();
 
             var model = new LabTestModel
             {
@@ -180,20 +180,20 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult Radiology(long patientId)
+        public async Task<IActionResult> Radiology(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var radiologies = _context.Radiologies.Where(r => r.PatientId == patientId).ToList();
+            var radiologies = await _context.Radiologies.Where(r => r.PatientId == patientId).ToListAsync();
 
             var model = new RadiologyModel
             {
@@ -212,23 +212,23 @@ namespace MCS.Controllers
         }
 
         [HttpPost]
-        public IActionResult Prescription(long patientId)
+        public async Task<IActionResult> Prescription(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var prescriptions = _context.Prescriptions
+            var prescriptions = await _context.Prescriptions
             .Where(p => p.PatientId == patientId)
             .Include(p => p.Medications)
-            .ToList();
+            .ToListAsync();
 
             var model = new PrescriptionModel
             {
@@ -292,9 +292,9 @@ namespace MCS.Controllers
 
         // POST: Appointments/Delete/5
         [HttpPost]
-        public ActionResult Delete(long id)
+        public async Task<ActionResult> Delete(long id)
         {
-            var appointment = _context.Appointments.Find(id);
+            var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null)
             {
                 return NotFound();
@@ -304,6 +304,16 @@ namespace MCS.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("ManageAppointments");
+        }
+
+        public JsonResult GetDoctorsByDepartment(long departmentId)
+        {
+            var doctors = _context.Doctors
+                .Where(d => d.ClinicId == departmentId)
+                .Select(d => new { d.Id, d.Name })
+                .ToList();
+
+            return Json(doctors.Select(d => new { id = d.Id, name = $"{d.Name}"}));
         }
     }
 }

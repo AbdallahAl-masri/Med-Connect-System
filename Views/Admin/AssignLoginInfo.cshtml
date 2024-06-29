@@ -25,7 +25,9 @@
             <h2 class="dr-name">Assign Employee</h2>
             <div class="d-flex">
                 <span class="navbar-text">Logged in @ViewBag.UserName</span>
-                <a href="@Url.Action("Logout", "Authentication")" class="btn btn-outline-dark ms-3">Logout</a>
+                <form asp-controller="Authentication" asp-action="StaffLogin" method="post" class="ms-3">
+                    <button type="submit" class="btn btn-outline-dark">Logout</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -48,7 +50,7 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="box">
                 <h2>Create Login Credentials</h2>
-                @using (Html.BeginForm("CreateCredentials", "Admin", FormMethod.Post, new { id = "createCredentialsForm" }))
+                    @using (Html.BeginForm("CreateCredentials", "Admin", FormMethod.Post, new { id = "createCredentialsForm" }))
                 {
                     @Html.AntiForgeryToken()
 

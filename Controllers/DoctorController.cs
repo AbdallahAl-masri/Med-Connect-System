@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MCS.Entities;
 using MCS.Models;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace YourNamespace.Controllers
@@ -25,7 +24,7 @@ namespace YourNamespace.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ViewPatient(string viewPatients)
+        public async Task<IActionResult> ViewPatient(string viewPatients)
         {
             if (string.IsNullOrEmpty(viewPatients))
             {
@@ -197,20 +196,20 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public IActionResult Diagnosis(long patientId)
+        public async Task<IActionResult> Diagnosis(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var diagnoses = _context.Diagnoses.Where(d => d.PatientId == patientId).ToList();
+            var diagnoses = await _context.Diagnoses.Where(d => d.PatientId == patientId).ToListAsync();
 
             var model = new DiagnosisModel
             {
@@ -229,20 +228,20 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public IActionResult LabTests(long patientId)
+        public async Task<IActionResult> LabTests(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var labTests = _context.Tests.Where(t => t.PatientId == patientId).ToList();
+            var labTests = await _context.Tests.Where(t => t.PatientId == patientId).ToListAsync();
 
             var model = new LabTestModel
             {
@@ -261,20 +260,20 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public IActionResult Radiology(long patientId)
+        public async Task<IActionResult> Radiology(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
             }
 
-            var radiologies = _context.Radiologies.Where(r => r.PatientId == patientId).ToList();
+            var radiologies = await _context.Radiologies.Where(r => r.PatientId == patientId).ToListAsync();
 
             var model = new RadiologyModel
             {
@@ -293,14 +292,14 @@ namespace YourNamespace.Controllers
         }
 
         [HttpPost]
-        public IActionResult Prescription(long patientId)
+        public async Task<IActionResult> Prescription(long patientId)
         {
             if (patientId <= 0)
             {
                 return BadRequest("Invalid patient ID.");
             }
 
-            var patient = _context.Patients.FirstOrDefault(p => p.Id == patientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
             if (patient == null)
             {
                 return NotFound("Patient not found.");
