@@ -16,6 +16,7 @@ public partial class Appointment
     public string? Status { get; set; }
 
     public long? DoctorId { get; set; }
+    public string Period { get; set; }
 
     public virtual Department Department { get; set; } = null!;
 

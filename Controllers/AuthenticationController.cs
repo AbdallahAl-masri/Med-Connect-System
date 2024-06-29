@@ -13,6 +13,7 @@ namespace MCS.Controllers
     {
         private readonly UserManager<DeptStaff> _userManager;
         private readonly SignInManager<DeptStaff> _signInManager;
+        private readonly UserManager<Patient> _patientuserManager;
         private readonly McsContext _context;
 
         public AuthenticationController(UserManager<DeptStaff> userManager, SignInManager<DeptStaff> signInManager, McsContext context)
@@ -21,27 +22,34 @@ namespace MCS.Controllers
             _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        [HttpPost("register")]
-        public async Task<IActionResult> PatientRegister([FromBody] RegisterModel model)
+        [HttpPost]
+        [Route("PatientRegister")]
+        public async Task<IActionResult> PatientRegister(string firstname , string lastname, DateTime dateofbirth,string password , long phonenumber , string officialid)
         {
-            var username = model.Email ?? model.Phone;
+            
 
-            if (ModelState.IsValid && model.Password == model.ConfirmPassword)
+            
+            var user = new Patient 
             {
-                var user = new DeptStaff { UserName = username };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                Name = firstname + " " + lastname,
+                BirthDate = dateofbirth.Date,
+                PhoneNumber = phonenumber,
+                OfficialId = officialid,
+                PasswordHash = 
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    return Ok(new { Message = "User registered successfully" });
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-
+            if (result.Succeeded)
+            {
+                    return Ok(new { Message = "User registered successfully" },PatientId = );
             }
+
+            foreach (var error in result.Errors)
+            {
+                    ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+           
 
             return BadRequest("Invalid details");
         }
