@@ -12,7 +12,7 @@ public partial class Appointment
     public long PatientId { get; set; }
 
     public string Timeslot { get; set; }
-    public DateTime DateTime { get; set; }
+    public DateTime Datetime { get; set; }
 
     public string? Status { get; set; }
 

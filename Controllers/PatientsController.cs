@@ -29,19 +29,45 @@ namespace MCS.Controllers
         [HttpGet]
         [Route("GetPatientAppointments")]
 
-        public ActionResult<IEnumerable<PatientAppointment>> GetPatientAppointments(int patientId)
+        public async Task<IActionResult>  GetPatientAppointments(long patientId)
         {
             // Retrieve appointments for the specified patient and structure them into a list
-            var appointments = _context.PatientAppointments
+            var appointments = _context.Appointments
                 .Where(a => a.PatientId == patientId)
                 .ToList();
-
-            if (appointments == null || appointments.Count == 0)
+            var apps = new List<PatientAppointmentView>();
+            foreach (var appointment in appointments)
             {
-                return NotFound("No appointments found for the specified patient.");
+                var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == appointment.DepartmentId);
+                var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Id == appointment.DoctorId);
+                PatientAppointmentView app;
+                if (doctor != null)
+                {
+                    app = new PatientAppointmentView
+                    {
+                        Department = dept.Name,
+                        Doctor = doctor.Name,
+                        Timeslot = appointment.Timeslot,
+                        Datetime = appointment.Datetime.Date
+                    };
+
+                }
+                else
+                {
+                    app = new PatientAppointmentView
+                    {
+                        Department = dept.Name,
+                        Timeslot = appointment.Timeslot,
+                        Datetime = appointment.Datetime.Date
+                    };
+
+                }
+                apps.Append(app);
+
             }
+
             // will return the appointments as a list where we will parse them as json in the mobile app and display them
-            return Ok(appointments);
+            return Ok(apps);
         }
 
         [HttpGet]
@@ -147,8 +173,6 @@ namespace MCS.Controllers
             return Ok(patient);
         }
 
-
-
         [HttpGet]
         [Route("GetInvoices")]
 
@@ -200,6 +224,16 @@ namespace MCS.Controllers
                 record.Append(t);
             }
             return Ok(record);
+        }
+        [HttpGet]
+        [Route("GetNamebyId")]
+        public async Task<IActionResult> GetNamebyId(long patientId)
+        {
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.Id == patientId);
+            if (patient == null)
+                return NotFound();
+            
+            return Ok(new { name = patient.Name } );
         }
 
         [HttpPost]
