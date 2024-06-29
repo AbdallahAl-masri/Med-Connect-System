@@ -225,6 +225,7 @@ namespace MCS.Controllers
             }
             return Ok(record);
         }
+
         [HttpGet]
         [Route("GetNamebyId")]
         public async Task<IActionResult> GetNamebyId(long patientId)
@@ -259,7 +260,7 @@ namespace MCS.Controllers
 
         public async Task<IActionResult> MakeAppointment(long patientid, string departmentname, DateTime apptdate, string period,string doctorname="")
         {
-           
+            
 
             
             var doc = await _context.Doctors.FindAsync(doctorname);

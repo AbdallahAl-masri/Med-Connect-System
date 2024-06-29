@@ -71,10 +71,11 @@ namespace MCS.Controllers
           
            
             var result = await _patientsignInManager.PasswordSignInAsync(nationalnumber, password, false, lockoutOnFailure: false);
-
+            
             if (result.Succeeded)
             {
-                return Ok(new { Message = "User logged in successfully" });
+                var patient = await _context.Patients.FirstOrDefaultAsync(p => p.OfficialId == nationalnumber);
+                return Ok(new { patientid = patient.Id });
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt");
