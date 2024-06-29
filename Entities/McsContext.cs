@@ -347,8 +347,11 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.Name).HasColumnType("text");
             entity.Property(e => e.OfficialId)
                 .HasColumnType("text")
+                .IsRequired()
                 .HasColumnName("OfficialID");
             entity.Property(e => e.PasswordHash).HasColumnType("text");
+            entity.HasIndex(e => e.OfficialId).IsUnique();
+
         });
 
         modelBuilder.Entity<PatientAppointment>(entity =>

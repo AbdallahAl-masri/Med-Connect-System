@@ -6,6 +6,7 @@ using MCS.Models;
 using Microsoft.EntityFrameworkCore;
 using MCS.Entities;
 using System.Security.Principal;
+using System.Globalization;
 
 namespace MCS.Controllers
 {
@@ -13,6 +14,9 @@ namespace MCS.Controllers
     {
         private readonly UserManager<DeptStaff> _userManager;
         private readonly SignInManager<DeptStaff> _signInManager;
+        private readonly UserManager<Patient> _patientuserManager;
+        private readonly SignInManager<Patient> _patientsignInManager;
+
         private readonly McsContext _context;
 
         public AuthenticationController(UserManager<DeptStaff> userManager, SignInManager<DeptStaff> signInManager, McsContext context)
@@ -21,48 +25,62 @@ namespace MCS.Controllers
             _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        [HttpPost("register")]
-        public async Task<IActionResult> PatientRegister([FromBody] RegisterModel model)
+        [HttpPost]
+        [Route("PatientRegister")]
+        public async Task<IActionResult> PatientRegister(string firstname , string lastname, string dateofbirth, long phonenumber , string nationalnumber)
         {
-            var username = model.Email ?? model.Phone;
-
-            if (ModelState.IsValid && model.Password == model.ConfirmPassword)
+            var user = new Patient 
             {
-                var user = new DeptStaff { UserName = username };
-                var result = await _userManager.CreateAsync(user, model.Password);
+                Name = firstname + " " + lastname,
+                BirthDate = DateTime.ParseExact(dateofbirth, "yyyy-MM-dd", CultureInfo.InvariantCulture),
+                PhoneNumber = phonenumber,
+                OfficialId = nationalnumber,
+            };
+            _context.Add(user);
+            await _context.SaveChangesAsync();
+            user = await _context.Patients.FindAsync(user);
+            return Ok(new { patientid = user.Id } );
+        }
+        [HttpPost]
+        [Route("PatientRegister2")]
+        public async Task<IActionResult> PatientRegister2(long Id , string Password)
+        {
 
-                if (result.Succeeded)
-                {
-                    return Ok(new { Message = "User registered successfully" });
-                }
+            var user = await _context.Patients.FirstOrDefaultAsync(p => p.Id == Id);
+            if (user == null)
+                return BadRequest(new { Message = "User not found" } );
+            var result = await _patientuserManager.CreateAsync(user, Password);
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = "User registered successfully" } );
+            }
 
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return BadRequest("Invalid details");
         }
         [HttpGet("PatientLogin")]
-        public async Task<IActionResult> PatientLogin([FromForm] PatientLoginModel model)
+        [Route("PatientLogin")]
+
+        public async Task<IActionResult> PatientLogin(string nationalnumber , string password)
         {
-            var username = model.Email ?? model.Phone;
-            if (ModelState.IsValid)
+          
+           
+            var result = await _patientsignInManager.PasswordSignInAsync(nationalnumber, password, false, lockoutOnFailure: false);
+            
+            if (result.Succeeded)
             {
-                
-                var result = await _signInManager.PasswordSignInAsync(username, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    return Ok(new { Message = "User logged in successfully" });
-                }
-
-                ModelState.AddModelError(string.Empty, "Invalid login attempt");
+                var patient = await _context.Patients.FirstOrDefaultAsync(p => p.OfficialId == nationalnumber);
+                return Ok(new { patientid = patient.Id });
             }
 
+            ModelState.AddModelError(string.Empty, "Invalid login attempt");
             return BadRequest(ModelState);
+           
         }
 
         [HttpGet]
