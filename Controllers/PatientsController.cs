@@ -202,7 +202,7 @@ namespace MCS.Controllers
                 {
                     DepartmentId = dept.Id,
                     PatientId = patientid,
-                    Timeslot = apptdate.Date,
+                    DateTime = apptdate.Date,
 
                 };
             }
@@ -213,7 +213,7 @@ namespace MCS.Controllers
                 {
                     DepartmentId = dept.Id,
                     PatientId = patientid,
-                    Timeslot = apptdate.Date,
+                    DateTime = apptdate.Date,
                     DoctorId = doc.Id
 
                 };
