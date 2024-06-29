@@ -90,7 +90,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.Status).HasColumnType("text");
             entity.Property(e => e.Timeslot).HasColumnType("text");
-            entity.Property(e => e.DateTime).HasColumnType("datetime");
+            entity.Property(e => e.Datetime).HasColumnType("datetime");
 
             entity.HasOne(d => d.Department).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.DepartmentId)
