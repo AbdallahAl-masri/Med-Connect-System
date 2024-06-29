@@ -11,7 +11,7 @@ var connectionString = builder.Configuration.GetConnectionString("McsDatabase");
 builder.Services.AddDbContext<McsContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Add Identity services
+// Add Identity services for DeptStaff
 builder.Services.AddIdentity<DeptStaff, ApplicationRole>(options =>
 {
     // Configure sign-in requirements
@@ -28,35 +28,9 @@ builder.Services.AddIdentity<DeptStaff, ApplicationRole>(options =>
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 1;
 })
-
     .AddEntityFrameworkStores<McsContext>()
     .AddDefaultTokenProviders()
     .AddClaimsPrincipalFactory<CustomUserClaimsPrincipalFactory>();
-
-
-builder.Services.AddIdentity<Patient, IdentityRole>(options =>
-{
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.SignIn.RequireConfirmedAccount = false;
-    // Configure password policies
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
-})
-    .AddEntityFrameworkStores<McsContext>()
-    .AddDefaultTokenProviders();
-
-// Configure authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login"; // Specify login path
-        options.AccessDeniedPath = "/Account/Denied"; // Specify access denied path
-    });
-
 
 // Add controllers and views support
 builder.Services.AddControllersWithViews();
@@ -101,6 +75,5 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Authentication}/{action=StaffLogin}/{id?}");
-
 
 app.Run();
