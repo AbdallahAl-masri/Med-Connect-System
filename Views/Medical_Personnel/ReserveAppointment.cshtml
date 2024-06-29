@@ -96,13 +96,17 @@
                             </div>
                             <div id="doctorSelectorContainer" class="mb-3">
                                 <label for="doctorSelection" class="form-label">Select Doctor</label>
-                                <select class="form-select" id="doctorSelection" name="doctorId" required>
+                                <select class="form-select" id="doctorSelection" name="doctorId">
                                     <option value="" disabled selected>Select doctor</option>
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <label for="AppointmentDate" class="form-label">Date</label>
+                                <input type="date" class="form-select" id="AppointmentDate" name="AppointmentDate" required>
+                            </div>
+                            <div class="mb-3">
                                 <label for="appointmentTime" class="form-label">Time</label>
-                                <select type="time" class="form-control" id="appointmentTime" name="appointmentTime" required>
+                                <select class="form-control" id="appointmentTime" name="appointmentTime" required>
                                     <option value="" disabled selected>Select Time</option>
                                     <option value="morning">morning</option>
                                     <option value="afternoon">afternoon</option>
