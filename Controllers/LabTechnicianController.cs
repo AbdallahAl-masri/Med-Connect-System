@@ -61,7 +61,7 @@ namespace MCS.Controllers
                     PatientName = model.PatientName,
                     TestType = model.TestName,
                     Results = model.ReportContent,
-                    TestDate = model.ReportDate,
+                    TestDate = DateTime.Now,
                     RecievedResult = true,
                 };
 

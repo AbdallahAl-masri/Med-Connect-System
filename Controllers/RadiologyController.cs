@@ -60,7 +60,7 @@ namespace MCS.Controllers
                     PatientName = model.PatientName,
                     ImageType = model.TestName,
                     ImagePath = model.ReportContent,
-                    ImageDate = model.ReportDate
+                    ImageDate = DateTime.Now,
                 };
 
                 _context.Radiologies.Add(testReport);
