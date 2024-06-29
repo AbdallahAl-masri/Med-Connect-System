@@ -236,6 +236,24 @@ namespace MCS.Controllers
             return Ok(new { name = patient.Name } );
         }
 
+        [HttpGet]
+        [Route("fetchDoctor")]
+
+        public async Task<IActionResult> fetchDoctor(string departmentname)
+        { 
+            var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == departmentname);
+            if (dept == null)
+                return NotFound();
+            var doctors = await _context.DeptStaffs.Where(d => d.DepartmentId == dept.Id).Where(d=> d.Role == "Doctor").ToListAsync();
+            var strings = new List<string>();
+            foreach (var doctor in doctors) 
+            {
+                string name = doctor.FirstName + " " + doctor.LastName;
+                strings.Append(name);
+            }
+            return Ok(new { doctors = strings });
+        }
+        
         [HttpPost]
         [Route("MakeAppointment")]
 
@@ -255,7 +273,7 @@ namespace MCS.Controllers
                 {
                     DepartmentId = dept.Id,
                     PatientId = patientid,
-                    DateTime = apptdate.Date,
+                    Datetime = apptdate.Date,
                     Timeslot = period
 
                 };
@@ -267,7 +285,7 @@ namespace MCS.Controllers
                 {
                     DepartmentId = dept.Id,
                     PatientId = patientid,
-                    DateTime = apptdate.Date,
+                    Datetime = apptdate.Date,
                     DoctorId = doc.Id,
                     Timeslot = period
 
