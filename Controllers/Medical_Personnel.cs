@@ -69,6 +69,7 @@ namespace MCS.Controllers
                     DepartmentId = dept.Id, 
                     PatientId = model.PatientId,
                     Timeslot = model.AppointmentTime,
+                    Datetime = model.AppointmentDate.Date,
                     Status = "Scheduled",
                     
                 };
