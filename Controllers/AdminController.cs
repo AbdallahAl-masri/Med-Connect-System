@@ -340,6 +340,24 @@ namespace MCS.Controllers
 
                 if (result.Succeeded)
                 {
+                    if (model.Role == "Doctor")
+                    {
+                        if (string.IsNullOrWhiteSpace(model.Speciality))
+                        {
+                            ModelState.AddModelError(string.Empty, "Please enter a specialty for the doctor.");
+                            return View("AssignLoginInfo", model);
+                        }
+                        var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == model.DepartmentId);
+                        var doc = new Doctor
+                        {
+                            Name = model.FirstName + " " + model.LastName,
+                            Speciality = model.Speciality,
+                            StaffId = model.StaffId,
+                            PhoneNumber = long.Parse(model.PhoneNumber),
+                        };
+                        _context.Doctors.Add(doc);
+                        _context.SaveChanges();
+                    }
                     return RedirectToAction("Index");
                 }
                 else
@@ -349,6 +367,7 @@ namespace MCS.Controllers
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
                 }
+
             }
 
             return View("AssignLoginInfo",model);
