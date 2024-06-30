@@ -88,28 +88,65 @@ namespace MCS.Controllers
         public async Task<ActionResult> ManageAppointments()
         {
             var appointments = await _context.Appointments
-            .Include(a => a.Department)
-            .Select(a => new AppointmentViewModel
-            {
-                Id = a.Id,
-                PatientId = a.PatientId,
-                Department = a.Department.Name,
-                AppointmentTime = a.Timeslot,
-                Doctor = a.Doctor.Name,
-                Status = a.Status,
-            })
-            .ToListAsync();
+                .Include(a => a.Department)
+                .Include(a => a.Doctor)
+                .Select(a => new AppointmentViewModel
+                {
+                    Id = a.Id,
+                    PatientId = a.PatientId,
+                    Department = a.Department.Name,
+                    AppointmentTime = a.Timeslot,
+                    Doctor = a.Doctor.Name,
+                    Status = a.Status,
+                    AppointmentDate = a.Datetime,
+                })
+                .ToListAsync();
 
             return View(appointments);
         }
 
+
         // POST: Appointments/ManageAppointments
         [HttpPost]
-        public ActionResult ManageAppointments(List<AppointmentViewModel> appointments)
+        public async Task<ActionResult> ManageAppointments(List<AppointmentViewModel> appointments)
         {
-            return RedirectToAction("ManageAppointments");
+            if (ModelState.IsValid)
+            {
+                foreach (var viewModel in appointments)
+                {
+                    var appointment = await _context.Appointments
+                        .Include(a => a.Department)
+                        .Include(a => a.Doctor)
+                        .FirstOrDefaultAsync(a => a.Id == viewModel.Id);
+
+                    if (appointment != null)
+                    {
+                        appointment.PatientId = viewModel.PatientId;
+                        appointment.Timeslot = viewModel.AppointmentTime;
+                        appointment.Status = viewModel.Status;
+                        appointment.Datetime = viewModel.AppointmentDate;
+
+                        var department = await _context.Departments.FirstOrDefaultAsync(d => d.Name == viewModel.Department);
+                        if (department != null)
+                        {
+                            appointment.DepartmentId = department.Id;
+                        }
+
+                        var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Name == viewModel.Doctor);
+                        if (doctor != null)
+                        {
+                            appointment.DoctorId = doctor.Id;
+                        }
+
+                        _context.Appointments.Update(appointment);
+                    }
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction("ManageAppointments");
+            }
+            return View(appointments);
         }
-        
+
         [HttpGet]
         public IActionResult Diagnosis()
         {
@@ -246,6 +283,7 @@ namespace MCS.Controllers
         {
             var appointment = await _context.Appointments
                 .Include(a => a.Department)
+                .Include(a => a.Doctor)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (appointment == null)
@@ -259,11 +297,14 @@ namespace MCS.Controllers
                 PatientId = appointment.PatientId,
                 Department = appointment.Department.Name,
                 AppointmentTime = appointment.Timeslot,
-                Status = appointment.Status
+                AppointmentDate = appointment.Datetime,
+                Status = appointment.Status,
+                Doctor = appointment.Doctor.Name,
             };
 
             return View(viewModel);
         }
+
 
         // POST: Appointments/Edit/5
         [HttpPost]
@@ -271,7 +312,11 @@ namespace MCS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var appointment = await _context.Appointments.FirstOrDefaultAsync(p => p.Id == viewModel.Id);
+                var appointment = await _context.Appointments
+                    .Include(a => a.Department)
+                    .Include(a => a.Doctor)
+                    .FirstOrDefaultAsync(p => p.Id == viewModel.Id);
+
                 if (appointment == null)
                 {
                     return NotFound();
@@ -280,7 +325,20 @@ namespace MCS.Controllers
                 appointment.PatientId = viewModel.PatientId;
                 appointment.Timeslot = viewModel.AppointmentTime;
                 appointment.Status = viewModel.Status;
-                // Update other properties as needed
+                appointment.Datetime = viewModel.AppointmentDate;
+
+                // Update the foreign key values
+                var department = await _context.Departments.FirstOrDefaultAsync(d => d.Name == viewModel.Department);
+                if (department != null)
+                {
+                    appointment.DepartmentId = department.Id;
+                }
+
+                var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.Name == viewModel.Doctor);
+                if (doctor != null)
+                {
+                    appointment.DoctorId = doctor.Id;
+                }
 
                 _context.Appointments.Update(appointment);
                 await _context.SaveChangesAsync();
@@ -290,6 +348,7 @@ namespace MCS.Controllers
 
             return View(viewModel);
         }
+
 
         // POST: Appointments/Delete/5
         [HttpPost]

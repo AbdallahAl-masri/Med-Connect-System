@@ -9,6 +9,7 @@ namespace MCS.Models
         public long PatientId { get; set; }
         public string Department { get; set; }
         public string AppointmentTime { get; set; }
+        public DateTime AppointmentDate {  get; set; }
         public string Status { get; set; }
         public string Doctor { get; set; }
     }

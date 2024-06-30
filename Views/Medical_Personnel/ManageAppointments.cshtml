@@ -70,7 +70,7 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="box">
-                    <div class="col-md-8 mb-4">
+                    <div class="col-md-10 mb-4">
                         <h2>Manage Appointments</h2>
                         <div class="table-responsive">
                             <table class="table table-bordered">
@@ -80,6 +80,7 @@
                                         <th>Patient ID</th>
                                         <th>Doctor</th>
                                         <th>Deparment</th>
+                                        <th>Time</th>
                                         <th>Date</th>
                                         <th>Status</th>
                                         <th>Actions</th>
@@ -94,6 +95,7 @@
                                             <td>@appointment.Doctor</td>
                                             <td>@appointment.Department</td>
                                             <td>@appointment.AppointmentTime</td>
+                                            <td>@appointment.AppointmentDate.ToString("dd/MM/yyyy")</td>
                                             <td>@appointment.Status</td>
                                             <td>
                                                 <form method="get" action="@Url.Action("Edit", "Medical_Personnel", new { id = appointment.Id })" class="d-inline">

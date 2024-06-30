@@ -11,13 +11,12 @@ public partial class Appointment
 
     public long PatientId { get; set; }
 
-    public string Timeslot { get; set; }
+    public string Timeslot { get; set; } = null!;
     public DateTime Datetime { get; set; }
 
     public string? Status { get; set; }
 
     public long? DoctorId { get; set; }
-    public string Period { get; set; }
 
     public virtual Department Department { get; set; } = null!;
 

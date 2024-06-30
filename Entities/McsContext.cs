@@ -90,6 +90,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.Status).HasColumnType("text");
             entity.Property(e => e.Timeslot).HasColumnType("text");
+            entity.Property(e => e.Datetime).HasColumnName("Date");
             entity.Property(e => e.Datetime).HasColumnType("datetime");
 
             entity.HasOne(d => d.Department).WithMany(p => p.Appointments)
@@ -207,7 +208,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.DeptHeadId).HasColumnName("DeptHeadID");
             entity.Property(e => e.Location).HasColumnType("text");
-            entity.Property(e => e.Name).HasColumnType("text");
+            entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.WorkingHours).HasColumnType("text");
         });
 
@@ -259,7 +260,7 @@ public partial class McsContext : IdentityDbContext<DeptStaff, ApplicationRole, 
             entity.Property(e => e.Location)
                 .HasColumnType("text")
                 .HasColumnName("location");
-            entity.Property(e => e.Name).HasColumnType("text");
+            entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.PasswordHash).HasColumnType("text");
             entity.Property(e => e.Speciality).HasColumnType("text");
             entity.Property(e => e.StaffId).HasColumnName("StaffID");
