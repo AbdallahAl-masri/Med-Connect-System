@@ -189,6 +189,7 @@ namespace YourNamespace.Controllers
             return View(prescriptionModel);
         }
 
+
         [HttpGet]
         public IActionResult Diagnosis()
         {

@@ -11,9 +11,9 @@ public partial class Department
 
     public string Location { get; set; } = null!;
 
-    public long BedCount { get; set; }
+    public long BedCount { get; set; } = 0;
 
-    public long DeptHeadId { get; set; }
+    public long DeptHeadId { get; set; } = 0;
 
     public string WorkingHours { get; set; } = null!;
 

@@ -5,9 +5,9 @@ namespace MCS.Models
     {
         public long PatientId { get; set; }
         public string Department { get; set; }
-        public long DoctorId { get; set; }
         public string AppointmentTime { get; set; }
         public DateTime AppointmentDate { get; set; }
-        public IEnumerable<Department> Departments { get; set; }
+        public IEnumerable<Department>? Departments { get; set; }
+        public long DoctorId { get; set; }
     }
 }

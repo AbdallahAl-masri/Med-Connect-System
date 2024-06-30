@@ -66,25 +66,39 @@ namespace MCS.Controllers
                 // Here, you would save the appointment to the database
                 Appointment newAppointment = new Appointment
                 {
-                    DepartmentId = dept.Id, 
+                    DepartmentId = dept.Id,
                     PatientId = model.PatientId,
                     Timeslot = model.AppointmentTime,
                     Datetime = model.AppointmentDate.Date,
                     Status = "Scheduled",
-                    
+                    DoctorId = model.DoctorId,
+
                 };
 
                 _context.Appointments.Add(newAppointment);
                 _context.SaveChanges();
 
                 // Redirect to a success page or return a view
-                return RedirectToAction("Index", "Home"); // Redirect to home page for now
+                return RedirectToAction("Index", "Admin"); // Redirect to home page for now
             }
 
             // If model state is not valid, return to the view with errors
             return View(model);
         }
+
         [HttpGet]
+        public async Task<IActionResult> GetDoctorsByDepartment(string departmentName)
+        {
+            var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Name == departmentName);
+            var doctors = await _context.Doctors
+                .Where(e => e.ClinicId == dept.Id)
+                .Select(e => new { id = e.Id, name = e.Name })
+                .ToListAsync();
+
+            return Json(doctors);
+        }
+
+    [HttpGet]
         public async Task<ActionResult> ManageAppointments()
         {
             var appointments = await _context.Appointments
@@ -364,16 +378,6 @@ namespace MCS.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("ManageAppointments");
-        }
-
-        public JsonResult GetDoctorsByDepartment(long departmentId)
-        {
-            var doctors = _context.Doctors
-                .Where(d => d.ClinicId == departmentId)
-                .Select(d => new { d.Id, d.Name })
-                .ToList();
-
-            return Json(doctors.Select(d => new { id = d.Id, name = $"{d.Name}"}));
         }
     }
 }

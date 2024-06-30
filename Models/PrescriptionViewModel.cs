@@ -18,7 +18,7 @@ namespace MCS.Models
         [Display(Name = "Patient Name")]
         public string PatientName { get; set; } = null!;
 
-        public string? Comments { get; set; }
+        public string? Comments { get; set; } = string.Empty;
 
         public List<MedicationViewModel> Medications { get; set; }
     }

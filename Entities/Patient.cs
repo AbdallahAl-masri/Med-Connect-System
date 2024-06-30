@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MCS.Entities;
 
-public partial class Patient : IdentityUser
+public partial class Patient
 {
     public long Id { get; set; }
 

@@ -75,15 +75,15 @@
                                 <div class="medication-item mb-3" data-index="@i">
                                     <label for="Medications[@i].MedicineName" class="form-label">Medicine Name<span class="text-danger"> *</span></label>
                                     <input type="text" id="Medications[@i].MedicineName" name="Medications[@i].MedicineName" class="form-control" placeholder="Enter medicine name" value="@Model.Medications[i].MedicineName" />
-
+                                    <span class="text-danger" asp-validation-for="Medications[i].MedicineName"></span>
 
                                     <label for="Medications[@i].Dosage" class="form-label">Dosage<span class="text-danger"> *</span></label>
                                     <input type="text" id="Medications[@i].Dosage" name="Medications[@i].Dosage" class="form-control" placeholder="Enter dosage" value="@Model.Medications[i].Dosage" />
-
+                                    <span class="text-danger" asp-validation-for="Medications[i].Dosage"></span>
 
                                     <label for="Medications[@i].Duration" class="form-label">Duration<span class="text-danger"> *</span></label>
-                                    <input type="text" id="Medications[@i].Duration" name="Medications[i].Duration" class="form-control" placeholder="Enter duration" value="@Model.Medications[i].Duration" />
-                                    
+                                    <input type="text" id="Medications[@i].Duration" name="Medications[@i].Duration" class="form-control" placeholder="Enter duration" value="@Model.Medications[i].Duration" />
+                                    <span class="text-danger" asp-validation-for="Medications[i].Duration"></span>
                                 </div>
                             }
                         </div>
