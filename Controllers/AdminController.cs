@@ -209,9 +209,12 @@ namespace MCS.Controllers
                 .Where(e => e.Id == id)
                 .ToListAsync();
 
+            var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == employees.First().DepartmentId);
+
             var viewModel = new ManageEmployeesViewModel
             {
                 SearchId = searchid,
+                department = dept.Name,
                 Employees = employees
             };
 
@@ -403,7 +406,7 @@ namespace MCS.Controllers
                     var employees = await _context.DeptStaffs
                         .Where(e => e.DepartmentId == id)
                         .ToListAsync();
-
+                    var dept = await _context.Departments.FirstOrDefaultAsync(d => d.Id == employees.First().DepartmentId);
                     if (employees == null || !employees.Any())
                     {
                         ModelState.AddModelError(string.Empty, "No employees found for the provided Department ID.");
@@ -412,7 +415,8 @@ namespace MCS.Controllers
                     var viewModel = new ManageEmployeesViewModel
                     {
                         SearchId = searchid,
-                        Employees = employees
+                        Employees = employees,
+                        department = dept.Name,
                     };
 
                     return View(viewModel);

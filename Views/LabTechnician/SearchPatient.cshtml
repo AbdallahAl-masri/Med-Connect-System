@@ -52,7 +52,7 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="box">
-                    <h2>Search Patient by ID or Name</h2>
+                    <h2>Search Patient</h2>
                     <form asp-action="SearchPatient" method="post" class="input-group mb-3">
                         <input type="text" class="form-control" name="searchTerm" placeholder="Enter patient ID">
                         <button class="btn btn-primary" type="submit">Search</button>
@@ -61,6 +61,11 @@
                     <!-- Results Table -->
                     @if (Model != null && Model.Any())
                     {
+                        @foreach(var n in Model)
+                        {
+                            <h2>Name: @n.PatientName</h2>
+                            break;
+                        }
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>

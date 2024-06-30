@@ -68,7 +68,7 @@
                     <h2>Retrieve Employees by Employee ID</h2>
                     <form id="searchForm" asp-action="SearchEmployees" method="post">
                         <div class="mb-3">
-                            <input type="text" class="form-control" id="search-id" name="searchid" placeholder="Department ID or Employee ID" required>
+                            <input type="text" class="form-control" id="search-id" name="searchid" placeholder="Employee ID" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Get Employees</button>
                     </form>
@@ -81,7 +81,7 @@
                                     <th>First Name</th>
                                     <th>Last Name</th>
                                     <th>Employee ID</th>
-                                    <th>Department ID</th>
+                                    <th>Department Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
                                     <th>Action</th>
@@ -94,7 +94,7 @@
                                         <td>@employee.FirstName</td>
                                         <td>@employee.LastName</td>
                                         <td>@employee.Id</td>
-                                        <td>@employee.DepartmentId</td>
+                                        <td>@Model.department</td>
                                         <td>@employee.Email</td>
                                         <td>@employee.Role</td>
                                         <td>

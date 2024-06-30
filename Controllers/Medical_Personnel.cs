@@ -79,7 +79,7 @@ namespace MCS.Controllers
                 _context.SaveChanges();
 
                 // Redirect to a success page or return a view
-                return RedirectToAction("Index", "Admin"); // Redirect to home page for now
+                return RedirectToAction("Index", "Medical_Personnel"); // Redirect to home page for now
             }
 
             // If model state is not valid, return to the view with errors
