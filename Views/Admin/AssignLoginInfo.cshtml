@@ -40,7 +40,16 @@
                     <ul class="nav flex-column">
                         <li class="nav-item"><a href="@Url.Action("Index", "Admin")" class="nav-link active"><h5><i class="bi bi-house-fill"></i> Home</h5></a></li>
                         <li class="nav-item"><a href="@Url.Action("AssignLoginInfo", "Admin")" class="nav-link"><h5><i class="bi bi-person-plus"></i> Assign Login Info</h5></a></li>
-                        <li class="nav-item"><a href="@Url.Action("ManageEmployees", "Admin")" class="nav-link"><h5><i class="bi bi-people"></i> Manage Users</h5></a></li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("SearchEmployees", "Admin")" class="nav-link">
+                                <h5><i class="bi bi-people"></i> Manage Employees</h5>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("SearchDepartments", "Admin")" class="nav-link">
+                                <h5><i class="bi bi-people"></i> Manage Departments</h5>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>

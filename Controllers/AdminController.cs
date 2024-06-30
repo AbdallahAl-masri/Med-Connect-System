@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using MCS.Models;
 using MCS.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Data.SqlTypes;
 
 namespace MCS.Controllers
 {
@@ -308,8 +309,7 @@ namespace MCS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCredentials(DeptStaffModel model)
         {
-            if (ModelState.IsValid)
-            {
+            
                 var validUserName = GenerateValidUserName(model.FirstName);
                 var existingUser = await _userManager.FindByNameAsync(validUserName);
 
@@ -369,7 +369,7 @@ namespace MCS.Controllers
                     }
                 }
 
-            }
+            
 
             return View("AssignLoginInfo",model);
         }
@@ -396,19 +396,36 @@ namespace MCS.Controllers
         [HttpPost]
         public async Task<IActionResult> SearchDepartments(string searchid)
         {
-            int.TryParse(searchid, out int id);
-
-            var employees = await _context.DeptStaffs
-                .Where(e => e.DepartmentId == id)
-                .ToListAsync();
-
-            var viewModel = new ManageEmployeesViewModel
+            if (long.TryParse(searchid, out long id))
             {
-                SearchId = searchid,
-                Employees = employees
-            };
+                try
+                {
+                    var employees = await _context.DeptStaffs
+                        .Where(e => e.DepartmentId == id)
+                        .ToListAsync();
 
-            return View(viewModel);
+                    if (employees == null || !employees.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, "No employees found for the provided Department ID.");
+                    }
+
+                    var viewModel = new ManageEmployeesViewModel
+                    {
+                        SearchId = searchid,
+                        Employees = employees
+                    };
+
+                    return View(viewModel);
+                }
+                catch (SqlNullValueException ex)
+                {
+                    ModelState.AddModelError(string.Empty, "An error occurred while retrieving employees: " + ex.Message);
+                    return View(new ManageEmployeesViewModel { SearchId = searchid });
+                }
+            }
+
+            ModelState.AddModelError(string.Empty, "Invalid Department ID.");
+            return View(new ManageEmployeesViewModel { SearchId = searchid });
         }
 
     }
