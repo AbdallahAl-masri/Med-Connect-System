@@ -354,6 +354,7 @@ namespace MCS.Controllers
                             Speciality = model.Speciality,
                             StaffId = model.StaffId,
                             PhoneNumber = long.Parse(model.PhoneNumber),
+                            ClinicId = model.DepartmentId,
                         };
                         _context.Doctors.Add(doc);
                         _context.SaveChanges();
