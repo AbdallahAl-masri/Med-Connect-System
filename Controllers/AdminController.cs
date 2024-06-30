@@ -205,7 +205,7 @@ namespace MCS.Controllers
             int.TryParse(searchid, out int id);
 
             var employees = await _context.DeptStaffs
-                .Where(e => e.DepartmentId == id || e.Id == id)
+                .Where(e => e.Id == id)
                 .ToListAsync();
 
             var viewModel = new ManageEmployeesViewModel
@@ -386,7 +386,30 @@ namespace MCS.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult SearchDepartments()
+        {
+            var viewModel = new ManageEmployeesViewModel();
+            return View(viewModel);
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> SearchDepartments(string searchid)
+        {
+            int.TryParse(searchid, out int id);
+
+            var employees = await _context.DeptStaffs
+                .Where(e => e.DepartmentId == id)
+                .ToListAsync();
+
+            var viewModel = new ManageEmployeesViewModel
+            {
+                SearchId = searchid,
+                Employees = employees
+            };
+
+            return View(viewModel);
+        }
 
     }
 }

@@ -1,6 +1,6 @@
 ﻿@model MCS.Models.ManageEmployeesViewModel
 @{
-    ViewBag.Title = "Search Employees";
+    ViewBag.Title = "Search Departments";
     Layout = null;
 }
 
@@ -65,8 +65,8 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="box">
-                    <h2>Retrieve Employees by Employee ID</h2>
-                    <form id="searchForm" asp-action="SearchEmployees" method="post">
+                    <h2>Retrieve Employees by Department ID</h2>
+                    <form id="searchForm" asp-action="SearchDepartments" method="post">
                         <div class="mb-3">
                             <input type="text" class="form-control" id="search-id" name="searchid" placeholder="Department ID or Employee ID" required>
                         </div>

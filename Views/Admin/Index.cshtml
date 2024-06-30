@@ -17,7 +17,7 @@
     <!-- Header -->
     <nav class="navbar bg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+            <a class="navbar-brand" href="@Url.Action("Index", "Admin")">
                 <img src="~/images/logo2.png" alt="Hospital Logo" class="logo">
             </a>
             <h2 class="dr-name">Dashboard</h2>
@@ -52,7 +52,17 @@
                             <div class="card text-center">
                                 <a class="card-body" href="@Url.Action("SearchEmployees", "Admin")">
                                     <i class="bi bi-upload display-4"></i>
-                                    <h5 class="card-title">Manage User Accounts</h5>
+                                    <h5 class="card-title">Manage Employee Accounts</h5>
+                                    <p class="card-text">Add, edit, or delete user accounts.</p>
+                                    <button class="btn btn-primary">Go</button>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card text-center">
+                                <a class="card-body" href="@Url.Action("SearchDepartments", "Admin")">
+                                    <i class="bi bi-upload display-4"></i>
+                                    <h5 class="card-title">Manage Departments Accounts</h5>
                                     <p class="card-text">Add, edit, or delete user accounts.</p>
                                     <button class="btn btn-primary">Go</button>
                                 </a>
